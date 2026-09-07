@@ -23,6 +23,8 @@ from contextlib import asynccontextmanager
 from .core.TaskRouter import TaskRouter
 from .friday_modules.text_to_speech_module.Piper_TTS import tts
 from .friday_modules.persistent_memory.memory_operations import fetch_locations
+from .friday_modules.desktop_module.app_registry.create_registry import create_registry
+from .friday_modules.desktop_module.app_registry import registry
 
 
 @asynccontextmanager
@@ -33,9 +35,11 @@ async def lifespan(app: FastAPI):
     app.state.locations = fetch_locations(conn)
     conn.close()
 
+    registry.registry = create_registry()
+
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
-    app.state.speaker.tts('Hi, I am Friday. How can I help you')
+    # app.state.speaker.tts('Hi, I am Friday. How can I help you')
     yield
 
 

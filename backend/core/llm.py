@@ -19,5 +19,8 @@ def route_task(prompt: str):
     route = response.json()
     print(route)
     data = route["choices"][0]["message"]["content"]
+    if data.endswith('"'):
+        data = data[:-1]
+    print('llm', repr(data))
     data = json.loads(data)
     return data

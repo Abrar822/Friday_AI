@@ -77,6 +77,61 @@ class TakeScreenshot(BaseModel):
     parameters: NoParams
 
 
+class OpenLocalAppParams(BaseModel):
+    display_name: str
+
+
+class OpenLocalApp(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['open_local_app']
+    parameters: OpenLocalAppParams
+
+
+class MoveFolderParams(BaseModel):
+    pass
+
+
+class MoveFolder(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['move_folder']
+    parameters: MoveFolderParams
+
+
+class MoveFileParams(BaseModel):
+    pass
+
+
+class MoveFile(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['move_file']
+    parameters: MoveFileParams
+
+
+class SearchFileParams(BaseModel):
+    pass
+
+
+class SearchFile(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['search_file']
+    parameters: SearchFileParams
+
+
+class SearchFolderParams(BaseModel):
+    pass
+
+
+class SearchFolder(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['search_folder']
+    parameters: SearchFolderParams
+
+
 class CreateFolderParams(BaseModel):
     destination_foldername: str
     folder_to_be_created_name: str
@@ -196,6 +251,11 @@ DeskTopTask = Annotated[
     | Sleep
     | Hibernate
     | TakeScreenshot
+    | OpenLocalApp
+    | SearchFile
+    | SearchFolder
+    | MoveFile
+    | MoveFolder
     | CreateFolder
     | CreateFile
     | OpenFile

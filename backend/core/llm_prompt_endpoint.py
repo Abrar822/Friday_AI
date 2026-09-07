@@ -13,7 +13,7 @@ def generate_response(request: LLMRequestModel, req: Request):
     result = None
     try:
         data = route_task(request.prompt)
-        print("Data returned by llm", data)
+        print(repr(data))
 
         data = TaskRouterResponse.model_validate(data)
 
@@ -28,6 +28,7 @@ def generate_response(request: LLMRequestModel, req: Request):
         return {"response": [data.response] + result}
 
     except Exception as err:
+        print('llm endpoint', repr(data))
         req.app.state.speaker.tts("Sorry, I couldn't process that request.")
         print(str(err))
         return {"response": ["Sorry, I couldn't process that request."]}

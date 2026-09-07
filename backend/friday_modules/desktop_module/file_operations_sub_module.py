@@ -3,7 +3,6 @@ import pygetwindow as gw
 import os
 from send2trash import send2trash
 
-
 class FileOperationsSubModule:
 
     def __init__(self):
@@ -17,7 +16,24 @@ class FileOperationsSubModule:
             "rename_file": self.rename_file,
             "rename_folder": self.rename_folder,
             "close_file": self.close_file,
+            "move_folder": self.move_folder,
+            "move_file": self.move_file,
+            "search_file": self.search_file,
+            "search_folder": self.search_folder,
         }
+
+
+    def search_folder(self, task, req):
+        pass
+
+    def search_file(self, task, req):
+        pass
+
+    def move_folder(self, task, req):
+        pass
+
+    def move_file(self, task, req):
+        pass
 
     def create_file(self, task, req):
         foldername = task.parameters.foldername
