@@ -42,6 +42,8 @@ desktop:
 - open_local_app
 - search_folder
 - search_file
+- move_folder
+- move_file
 - conversation
 
 

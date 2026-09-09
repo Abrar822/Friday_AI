@@ -125,23 +125,25 @@ class FileOperationsSubModule:
                 f"Folder '{source_parent_folder}' is not registered in Friday memory."
             )
 
-        source_parent_folder_path = Path(location_list[0]['location'])
+        source_parent_folder_path = Path(location_list[0]["location"])
         if not source_parent_folder_path.is_dir():
             return f"Folder '{source_parent_folder}' is registered, but the physical path '{source_parent_folder_path}' does not exist on this machine."
 
-        location_list = self.filter_location_list(locations.locations, destination_folder)
+        location_list = self.filter_location_list(
+            locations.locations, destination_folder
+        )
         if not location_list:
-           return (
-                f"Folder '{destination_folder}' is not registered in Friday memory."
-            ) 
+            return f"Folder '{destination_folder}' is not registered in Friday memory."
 
-        destination_folder_path = Path(location_list[0]['location'])
+        destination_folder_path = Path(location_list[0]["location"])
         if not destination_folder_path.is_dir():
             return f"Folder '{destination_folder}' is registered, but the physical path '{destination_folder_path}' does not exist on this machine."
 
         old_file_path = source_parent_folder_path / filename
         if not old_file_path.is_file():
-            return f"File '{filename}' was not found inside '{source_parent_folder_path}'."
+            return (
+                f"File '{filename}' was not found inside '{source_parent_folder_path}'."
+            )
 
         new_file_path = destination_folder_path / filename
         try:
@@ -149,8 +151,6 @@ class FileOperationsSubModule:
             return f"File {filename} moved successfully."
         except Exception as err:
             return f"Failed to move file. Error: {err}"
-
-        
 
     def create_file(self, task):
         foldername = task.parameters.foldername

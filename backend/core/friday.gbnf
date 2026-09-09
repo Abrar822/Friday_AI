@@ -1,8 +1,4 @@
-import requests
-import json
-from .system_prompt import system_prompt
-
-FRIDAY_GRAMMAR = r"""
+# GBNF primarily stands for GGML Backus-Naur Form, a formal grammar specification used to constrain and structure the output of Large Language Models (LLMs).
 # Allow structural spaces anywhere between tokens safely
 root ::= ws "{" ws "\"response\"" ws ":" ws string ws "," ws "\"tasks\"" ws ":" ws task-list ws "}" ws
 task-list ::= "[" ws (task (ws "," ws task)*)? ws "]"
@@ -22,29 +18,3 @@ string ::= "\"" ([^"\\] | "\\" ["\\/bfnrt] | "\\u" [0-9a-fA-F] [0-9a-fA-F] [0-9a
 number ::= ("-")? ([0-9])+ ("." ([0-9])+)? ([eE] [+-]? ([0-9])+)?
 integer ::= [0-9]+
 ws ::= [ \t\n\r]*
-"""
-
-
-
-def route_task(prompt: str):
-    response = requests.post(
-        "http://127.0.0.1:8080/chat/completions",
-        json={
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ],
-            "temperature": 0.2,
-            "max_tokens": 2048,
-            "grammar": FRIDAY_GRAMMAR,
-        },
-        timeout=60,
-    )
-    route = response.json()
-    print(route)
-    data = route["choices"][0]["message"]["content"]
-    if data.endswith('"'):
-        data = data[:-1]
-    print("llm", repr(data))
-    data = json.loads(data)
-    return data
