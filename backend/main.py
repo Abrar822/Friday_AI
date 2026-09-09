@@ -25,6 +25,7 @@ from .friday_modules.text_to_speech_module.Piper_TTS import tts
 from .friday_modules.persistent_memory.memory_operations import fetch_locations
 from .friday_modules.desktop_module.app_registry.create_registry import create_registry
 from .friday_modules.desktop_module.app_registry import registry
+from .friday_modules.persistent_memory import locations
 
 
 @asynccontextmanager
@@ -32,7 +33,8 @@ async def lifespan(app: FastAPI):
     db()
 
     conn = get_conn_obj()
-    app.state.locations = fetch_locations(conn)
+    locations.locations = fetch_locations(conn)
+    print(locations.locations)
     conn.close()
 
     registry.registry = create_registry()

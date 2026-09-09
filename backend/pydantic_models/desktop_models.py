@@ -89,7 +89,9 @@ class OpenLocalApp(BaseModel):
 
 
 class MoveFolderParams(BaseModel):
-    pass
+    destination_folder: str
+    source_parent_folder: str
+    folder_to_move: str
 
 
 class MoveFolder(BaseModel):
@@ -100,7 +102,9 @@ class MoveFolder(BaseModel):
 
 
 class MoveFileParams(BaseModel):
-    pass
+    source_parent_folder: str
+    destination_folder: str
+    filename: str
 
 
 class MoveFile(BaseModel):
@@ -111,7 +115,8 @@ class MoveFile(BaseModel):
 
 
 class SearchFileParams(BaseModel):
-    pass
+    parent_foldername: str
+    filename: str
 
 
 class SearchFile(BaseModel):
@@ -122,7 +127,8 @@ class SearchFile(BaseModel):
 
 
 class SearchFolderParams(BaseModel):
-    pass
+    foldername: str
+    parent_foldername: str
 
 
 class SearchFolder(BaseModel):

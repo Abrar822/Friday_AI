@@ -20,7 +20,6 @@ email:
 browser:
 - search_specific_website
 - open_website
-- summarize_website
 
 desktop:
 - set_volume
@@ -41,6 +40,8 @@ desktop:
 - rename_folder
 - close_file
 - open_local_app
+- search_folder
+- search_file
 - conversation
 
 
@@ -50,9 +51,6 @@ browser.search_specific_website:
 {"website_name":"youtube|google|github|wikipedia|reddit|amazon|linkedin|facebook|instagram|twitter|x|spotify","query":"..."}
 
 browser.open_website:
-{"url":"..."}
-
-browser.summarize_website:
 {"url":"..."}
 
 desktop.set_volume:
@@ -78,7 +76,7 @@ desktop.open_file:
 {"filename":"...","foldername":"..."}
 
 desktop.open_folder:
-{"foldername":"..."}
+{"foldername":"...","parent_foldername":"..."}
 
 desktop.delete_file:
 {"filename":"...","foldername":"..."}
@@ -97,6 +95,18 @@ desktop.close_file:
 
 desktop.open_local_app:
 {"display_name":"..."}
+
+desktop.search_folder:
+{"parent_foldername":"...","foldername":"..."}
+
+desktop.search_file:
+{"parent_foldername":"...","filename":"..."}
+
+desktop.move_file:
+{"source_parent_folder":"...","destination_folder":"...","filename":"..."}
+
+desktop.move_folder:
+{"destination_folder":"...","source_parent_folder":"...","folder_to_move":"..."}
 
 desktop.conversation: {}
 
@@ -164,7 +174,6 @@ ACTION MAPPING:
 
 browser.open_website = open a website.
 browser.search_specific_website = search on a supported website.
-browser.summarize_website = summarize a website.
 
 All browser actions MUST use module "browser".
 All desktop actions MUST use module "desktop".
