@@ -4,6 +4,7 @@ import os
 from send2trash import send2trash
 import shutil
 from ..persistent_memory import locations
+from ..persistent_memory.memory_operations import upsert, delete, rename
 
 
 class FileOperationsSubModule:
@@ -106,9 +107,18 @@ class FileOperationsSubModule:
         new_folder_path = destination_folder_path / folder_to_move
 
         try:
+            msg = f"Folder {folder_to_move} moved successfully."
             shutil.move(actual_folder_path, destination_folder_path)
             os.startfile(new_folder_path)
-            return f"Folder {folder_to_move} moved successfully."
+
+            res = upsert(folder_to_move, str(new_folder_path))
+            if res["state"] and res["exist"]:
+                msg += " Folder Path updated successfully in Friday memory."
+            elif res["state"] and not res["exist"]:
+                msg += " Folder Path not updated, as it is not registered in Friday memory."
+            elif not res["state"]:
+                msg += " Folder Path cannot be updated, as some error occurred."
+            return msg
         except Exception as err:
             return f"Failed to move folder. Error: {err}"
 
@@ -148,6 +158,7 @@ class FileOperationsSubModule:
         new_file_path = destination_folder_path / filename
         try:
             shutil.move(old_file_path, new_file_path)
+            os.startfile(destination_folder_path)
             return f"File {filename} moved successfully."
         except Exception as err:
             return f"Failed to move file. Error: {err}"
@@ -281,8 +292,16 @@ class FileOperationsSubModule:
         if not folder_path.is_dir():
             return f"Folder '{folder_to_be_deleted}' was not found inside '{parent_foldername}'."
 
+        msg = f"Folder {folder_to_be_deleted} sent to trash successfully."
         send2trash(folder_path)
-        return f"Folder {folder_to_be_deleted} sent to trash successfully."
+        os.startfile(Path(location_list[0]["location"]))
+
+        res = delete(folder_to_be_deleted)
+        if res["state"]:
+            msg += " Folder Path deleted successfully from Friday memory."
+        else:
+            msg += " Folder Path cannot be updated, as some error occurred."
+        return msg
 
     def rename_file(self, task):
         foldername = task.parameters.foldername
@@ -332,7 +351,22 @@ class FileOperationsSubModule:
         folder_path = folder_path / old_foldername
         new_folder_path = folder_path.with_name(new_foldername)
         folder_path.rename(new_folder_path)
-        return f"Folder '{old_foldername}' renamed to '{new_foldername}' successfully."
+
+        msg = f"Folder '{old_foldername}' renamed to '{new_foldername}' successfully."
+
+        res = rename(
+            old_foldername,
+            new_foldername,
+            str(new_folder_path),
+        )
+        if res["state"] and res["exist"]:
+            msg += " Foldername updated successfully in Friday memory."
+        elif res["state"] and not res["exist"]:
+            msg += " Foldername not updated, as it is not registered in Friday memory."
+        elif not res["state"]:
+            msg += " Foldername cannot be updated, as some error occurred."
+
+        return msg
 
     def execute(self, task):
         action = self.actions.get(task.action)

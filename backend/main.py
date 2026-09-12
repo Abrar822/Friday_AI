@@ -34,7 +34,6 @@ async def lifespan(app: FastAPI):
 
     conn = get_conn_obj()
     locations.locations = fetch_locations(conn)
-    print(locations.locations)
     conn.close()
 
     registry.registry = create_registry()

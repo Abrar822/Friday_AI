@@ -11,7 +11,7 @@ task ::= "{" ws "\"id\"" ws ":" ws integer ws "," ws "\"module\"" ws ":" ws modu
 
 module-types ::= "\"email\"" | "\"browser\"" | "\"desktop\""
 
-action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"shutdown\"" | "\"restart\"" | "\"lock\"" | "\"sleep\"" | "\"hibernate\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\""
+action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\""
 
 # Flexible object for parameters
 parameters-object ::= "{" ws (string ws ":" ws value (ws "," ws string ws ":" ws value)*)? ws "}"
@@ -41,10 +41,9 @@ def route_task(prompt: str):
         timeout=60,
     )
     route = response.json()
-    print(route)
     data = route["choices"][0]["message"]["content"]
     if data.endswith('"'):
         data = data[:-1]
-    print("llm", repr(data))
     data = json.loads(data)
+    print(data)
     return data

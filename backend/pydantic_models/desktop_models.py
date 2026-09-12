@@ -38,35 +38,35 @@ class SetBrightness(BaseModel):
 class Shutdown(BaseModel):
     id: int
     module: Literal["desktop"]
-    action: Literal["shutdown"]
+    action: Literal["perform_shutdown"]
     parameters: NoParams
 
 
 class Restart(BaseModel):
     id: int
     module: Literal["desktop"]
-    action: Literal["restart"]
+    action: Literal["perform_restart"]
     parameters: NoParams
 
 
 class Lock(BaseModel):
     id: int
     module: Literal["desktop"]
-    action: Literal["lock"]
+    action: Literal["perform_locking"]
     parameters: NoParams
 
 
 class Sleep(BaseModel):
     id: int
     module: Literal["desktop"]
-    action: Literal["sleep"]
+    action: Literal["perform_sleep"]
     parameters: NoParams
 
 
 class Hibernate(BaseModel):
     id: int
     module: Literal["desktop"]
-    action: Literal["hibernate"]
+    action: Literal["perform_hibernation"]
     parameters: NoParams
 
 
