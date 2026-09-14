@@ -4,7 +4,8 @@ import os
 from send2trash import send2trash
 import shutil
 from ..persistent_memory import locations
-from ..persistent_memory.memory_operations import upsert, delete, rename
+from ..persistent_memory.memory_operations import upsert, delete, rename, fetch_locations
+from ..persistent_memory.db import get_conn_obj
 
 
 class FileOperationsSubModule:
@@ -105,13 +106,16 @@ class FileOperationsSubModule:
             return f"Folder '{folder_to_move}' was not found inside '{source_parent_folder}'."
 
         new_folder_path = destination_folder_path / folder_to_move
-
         try:
             msg = f"Folder {folder_to_move} moved successfully."
             shutil.move(actual_folder_path, destination_folder_path)
             os.startfile(new_folder_path)
 
             res = upsert(folder_to_move, str(new_folder_path))
+            # Updating the RAM db data and here with auto closes conn
+            with get_conn_obj() as conn:
+                locations.locations = fetch_locations(conn)
+
             if res["state"] and res["exist"]:
                 msg += " Folder Path updated successfully in Friday memory."
             elif res["state"] and not res["exist"]:
@@ -297,6 +301,11 @@ class FileOperationsSubModule:
         os.startfile(Path(location_list[0]["location"]))
 
         res = delete(folder_to_be_deleted)
+
+        # updation in db data in RAM
+        with get_conn_obj() as conn:
+            locations.locations = fetch_locations(conn)
+
         if res["state"]:
             msg += " Folder Path deleted successfully from Friday memory."
         else:
@@ -359,6 +368,11 @@ class FileOperationsSubModule:
             new_foldername,
             str(new_folder_path),
         )
+
+        # updation in ram data of db
+        with get_conn_obj() as conn:
+            locations.locations = fetch_locations(conn)
+
         if res["state"] and res["exist"]:
             msg += " Foldername updated successfully in Friday memory."
         elif res["state"] and not res["exist"]:
