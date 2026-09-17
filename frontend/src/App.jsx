@@ -15,15 +15,19 @@ function App() {
 
   return (
     <>
-      <Navbar menuBtnRef={menuBtnRef} />
-      <Sidebar menuBtnRef={menuBtnRef} />
-      <Chatbox setState={setState} />
-      <Routes>
-        <Route path="/" element={<Dashboard state={state} />} />
-        <Route path="/dashboard" element={<Dashboard state={state} />} />
-        <Route path="/memory" element={<Memory />} />
-        <Route path="/settings" element={<settings />} />
-      </Routes>
+      <div className="friday-ai">
+        <Navbar menuBtnRef={menuBtnRef} />
+        <Sidebar menuBtnRef={menuBtnRef} />
+        <Chatbox setState={setState} />
+        <div className="page-content">
+          <Routes>
+            <Route path="/" element={<Dashboard state={state} />} />
+            <Route path="/dashboard" element={<Dashboard state={state} />} />
+            <Route path="/memory" element={<Memory />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </div>
+      </div>
     </>
   );
 }

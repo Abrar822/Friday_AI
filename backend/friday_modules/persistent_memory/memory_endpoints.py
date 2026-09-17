@@ -15,8 +15,8 @@ memory_endpoints = APIRouter()
 def search_location(search_location: SearchLocation, conn=Depends(get_connection)):
     try:
         cursor = conn.cursor()
-        query = """SELECT * FROM memory WHERE f_name = ?"""
-        cursor.execute(query, (search_location.f_name.lower(),))
+        query = """SELECT * FROM memory WHERE f_name like ?"""
+        cursor.execute(query, (f'%{search_location.f_name.lower()}%',))
         data = cursor.fetchall()
         return data
     except Exception as err:
@@ -66,7 +66,6 @@ def display(conn=Depends(get_connection)):
         cursor = conn.cursor()
         cursor.execute(query)
         data = cursor.fetchall()
-        print(data)
         return data
     except Exception as err:
         raise HTTPException(

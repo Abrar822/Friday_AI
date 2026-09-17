@@ -1,8 +1,8 @@
 .chat-box {
   display: flex;
-  position: absolute;
-  right: 0;
+  position: fixed;
   top: 50px;
+  right: 0;
   z-index: 2;
   height: calc(100dvh - 50px);
   width: 400px;
@@ -139,7 +139,6 @@
   font-size: 16px;
   color: var(--text-primary);
   resize: none;
-  outline: none;
   line-height: 1.5;
 }
 
@@ -156,6 +155,11 @@
   cursor: pointer;
   font-size: 18px;
   border: none;
+  transition: all 0.25 ease;
+}
+
+.send-btn:active, .add-btn:active {
+	transform: scale(0.95);
 }
 
 .typing-loader {

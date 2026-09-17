@@ -1,5 +1,6 @@
 .sidebar {
-  position: relative;
+  position: fixed;
+  top: 50px;
   z-index: 2;
   display: flex;
   justify-content: flex-start;

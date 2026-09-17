@@ -1,0 +1,267 @@
+.memory-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding-left: 90px;
+  padding-top: 90px;
+  gap: 30px;
+}
+
+.section-1 {
+  width: 100%;
+  max-width: 730px;
+  min-height: 500px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--dark-border);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  margin: 5px;
+  margin-bottom: 15px;
+}
+
+.title {
+  font-size: 18px;
+}
+
+.searchbar {
+  flex: 1;
+  height: 35px;
+  border-radius: 10px;
+  padding: 4px 10px;
+  color: black;
+  background: var(--text-primary);
+  font-size: 16px;
+  border: none;
+}
+
+.search-btn {
+  border: none;
+  height: 100%;
+  width: 35px;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.25 ease;
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+  color: white;
+}
+
+.search-btn:active {
+  transform: scale(0.95);
+}
+
+.memory-table {
+  border-collapse: separate;
+  border: 1px solid var(--dark-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th {
+  font-size: 18px;
+  border-bottom: 1px solid var(--dark-border);
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 50px;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 230px;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 400px;
+}
+
+th:nth-child(1),
+th:nth-child(2) {
+  border-right: 1px solid var(--dark-border);
+}
+
+th,
+td {
+  padding: 8px 10px;
+  text-align: center;
+}
+
+td:nth-child(1) {
+  text-align: center;
+}
+
+td {
+  font-size: 15px;
+}
+
+tbody tr:hover {
+  background: var(--sidebar-bg);
+}
+
+td:nth-child(2),
+td:nth-child(3) {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+thead {
+  display: block;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+tbody {
+  display: block;
+  height: 550px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+tbody tr {
+  width: 100%;
+}
+
+tbody td {
+  flex-shrink: 0;
+}
+
+.memory-table input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--dark-border);
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.memory-table input[type="checkbox"]:checked::after {
+  position: absolute;
+  content: "✓";
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.delete-btn {
+  margin: 20px;
+  margin-left: 0;
+  align-self: flex-start;
+  border: none;
+  height: 100%;
+  padding: 5px 10px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.25 ease;
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+  color: white;
+  transition: all 0.25s ease;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+.section-2 {
+  width: 100%;
+  max-width: 730px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--dark-border);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.upsert-table {
+  border-collapse: separate;
+  border: 1px solid var(--dark-border);
+  border-radius: 10px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.upsert-table tbody {
+  display: block;
+  max-height: 550px;
+  min-height: 0;
+  height: auto;
+}
+
+.upsert-table tbody tr {
+  display: block;
+  width: 300px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.upsert-table thead tr {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  border-bottom: 1px solid var(--dark-border);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.upsert-table thead th {
+  border: none;
+}
+
+.upsert-btn {
+  margin: 20px;
+  margin-left: 0;
+  align-self: flex-start;
+  border: none;
+  height: 100%;
+  padding: 5px 10px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.25 ease;
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+  color: white;
+  transition: all 0.25s ease;
+}
+
+.upsert-btn:active {
+  transform: scale(0.95);
+}

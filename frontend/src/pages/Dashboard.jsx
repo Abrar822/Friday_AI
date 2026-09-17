@@ -12,7 +12,7 @@ export default function Dashboard({ state }) {
             </h2>
             <h2>How can I help you today?</h2>
           </div>
-          <Orb />
+          {/* <Orb /> */}
           <div className="state">{state}...</div>
           <div className="quick-actions">
             <button className="quick-action">
