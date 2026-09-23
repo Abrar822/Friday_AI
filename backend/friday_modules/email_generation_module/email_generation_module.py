@@ -12,7 +12,7 @@ class EmailGenerationModule:
             body = task.parameters.body
 
             webbrowser.open("https://mail.google.com/mail/u/0/#inbox?compose=new")
-            time.sleep(10)
+            time.sleep(15)
 
             pyautogui.press("tab")
             pyperclip.copy(subject)
