@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .core.llm_prompt_endpoint import llm_prompt_router
 from .friday_modules.persistent_memory.memory_endpoints import memory_endpoints
-from .friday_modules.persistent_memory.db import db, get_conn_obj
+from .friday_modules.persistent_memory.db import db, get_conn_obj, settingDb
 from contextlib import asynccontextmanager
 from .core.TaskRouter import TaskRouter
 from .friday_modules.text_to_speech_module.Piper_TTS import tts
@@ -26,11 +26,13 @@ from .friday_modules.persistent_memory.memory_operations import fetch_locations
 from .friday_modules.desktop_module.app_registry.create_registry import create_registry
 from .friday_modules.desktop_module.app_registry import registry
 from .friday_modules.persistent_memory import locations
+from .friday_modules.persistent_memory.setting_endpoints import setting_endpoints
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db()
+    settingDb()
 
     conn = get_conn_obj()
     locations.locations = fetch_locations(conn)
@@ -57,3 +59,4 @@ app.add_middleware(
 # Call endpoints
 app.include_router(llm_prompt_router)
 app.include_router(memory_endpoints)
+app.include_router(setting_endpoints)

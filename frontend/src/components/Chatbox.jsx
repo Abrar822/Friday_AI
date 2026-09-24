@@ -76,7 +76,7 @@ export default function Chatbox({ setState }) {
             >
               <i className="ti ti-x"></i>
             </span>
-            <span className="chat-title">Chat</span>
+            <span className="chat-title font-bold">Chat</span>
           </div>
           <div className="chat-section" ref={chatSectionRef}>
             {messages.map((msg, idx) => (

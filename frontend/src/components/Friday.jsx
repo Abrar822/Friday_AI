@@ -11,9 +11,12 @@ export default function FridayLogo() {
   const ringR = 19;
 
   return (
-    <svg
-      width="27"
-      height="27"
+    <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+      <div className="absolute opacity-10 text-(--text-primary) text-[160px] z-2 tracking-widest">FRIDAY</div>
+      <svg
+      className="animate-[fadeIn_5s_ease-in-out_infinite_alternate] absolute z-1"
+      width="300"
+      height="300"
       viewBox="0 0 45 45"
       xmlns="http://www.w3.org/2000/svg"
       style={{
@@ -92,5 +95,6 @@ export default function FridayLogo() {
         />
       </g>
     </svg>
+    </div>
   );
 }

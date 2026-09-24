@@ -110,4 +110,8 @@ A website search already includes opening/navigating to that website. "Search In
 MULTIPLE OPERATIONS:
 Only create multiple tasks when the user explicitly requests independent operations.
 Example: "Search YouTube for Interstellar and close p.jpg." -> browser.search_specific_website (id 1) and desktop.close_file (id 2).
+
+FOLDER/FILE OPERATIONS:
+never modify the folder or file name by yourself.
+Example: 'open folder named d inside folder named c'. keep name d and c as it is.
 """

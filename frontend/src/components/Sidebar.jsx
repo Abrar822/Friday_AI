@@ -9,7 +9,7 @@ export default function Sidebar({ menuBtnRef }) {
 
   return (
     <>
-      <div className="sidebar" ref={menuBtnRef}>
+      <div className="sidebar font-bold" ref={menuBtnRef}>
         <div
           onClick={() => {
             navigate("/dashboard");

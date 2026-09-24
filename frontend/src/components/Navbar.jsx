@@ -1,5 +1,4 @@
 import "../stylesheets/Navbar.css";
-import FridayLogo from "./Friday";
 
 export default function Navbar({ menuBtnRef }) {
   return (
@@ -16,8 +15,7 @@ export default function Navbar({ menuBtnRef }) {
           </div>
 
           <div className="logo">
-            <FridayLogo />
-            <span style={{'fontWeight': '800'}}>Friday</span> <span style={{'color': '#4FD8FF', 'fontWeight': '800'}}>AI</span>
+            <span style={{'fontWeight': '600'}} className="tracking-wide">Friday</span> <span style={{'color': '#4FD8FF', 'fontWeight': '600'}}>AI</span>
           </div>
         </nav>
       </div>

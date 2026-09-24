@@ -11,3 +11,6 @@ class FolderPaths(BaseModel):
 
 class DeleteData(BaseModel):
     f_name: str
+
+class SettingData(BaseModel):
+    name: str

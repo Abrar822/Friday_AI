@@ -18,6 +18,17 @@ def db():
     conn.commit()
     conn.close()
 
+def settingDb():
+    query = """CREATE TABLE IF NOT EXISTS keyval (
+        id PRIMARY KEY,
+        key VARCHAR NOT NULL UNIQUE,
+        value VARCHAR NOT NULL
+    )"""
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute(query)
+    conn.commit()
+    conn.close()
 
 def get_connection():
     try:
