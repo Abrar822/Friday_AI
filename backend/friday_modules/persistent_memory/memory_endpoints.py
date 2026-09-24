@@ -52,7 +52,7 @@ def insert_data(folder_arr: FolderPaths, conn=Depends(get_connection)):
         return {"message": "Successfully inserted/updated locations"}
     except Exception as err:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Insertion Failed. Please try again.'
         )
 
 
@@ -80,9 +80,12 @@ def delete(delete_f_name: list[DeleteData], conn=Depends(get_connection)):
         query = """
         DELETE FROM memory where f_name = ?
         """
-        conn.executemany(query, [(dic.f_name.lower(),) for dic in delete_f_name])
-        conn.commit()
-        return {"message": "Deleted locations successfully"}
+        cur = conn.cursor()
+        cur.executemany(query, [(dic.f_name.lower(),) for dic in delete_f_name])
+        if cur.rowcount:
+            conn.commit()
+            return {"message": "Deleted locations successfully."}
+        return {"message": "No folders found."}
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)

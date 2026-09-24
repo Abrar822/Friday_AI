@@ -135,7 +135,8 @@ thead {
 
 tbody {
   display: block;
-  height: 550px;
+  max-height: 550px;
+  min-height: 0;
   overflow: hidden;
   overflow-y: auto;
 }
@@ -212,37 +213,42 @@ tbody td {
   border-radius: 10px;
   overflow: hidden;
   align-self: flex-start;
+  width: 100%;
+}
+
+.upsert-table th, tr, tbody, thead {
+  display: block;
+}
+
+.upsert-table thead {
+  width: 100%;
 }
 
 .upsert-table tbody {
-  display: block;
-  max-height: 550px;
-  min-height: 0;
-  height: auto;
+  width: 100%;
 }
 
-.upsert-table tbody tr {
-  display: block;
-  width: 300px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 8px 10px;
-  text-align: center;
-}
-
-.upsert-table thead tr {
+.upsert-table tr {
+  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 300px;
-  border-bottom: 1px solid var(--dark-border);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  text-align: center;
 }
 
-.upsert-table thead th {
-  border: none;
+.upsert-table th:nth-child(1) {
+  width: 250px;
+  flex: 1;
+}
+
+.upsert-table th:nth-child(2) {
+  flex: 2;
+}
+
+.upsert-table td:nth-child(1) {
+  width: 250px;
+  flex: 1;
+}
+
+.upsert-table td:nth-child(2) {
+  flex: 2;
 }
 
 .upsert-btn {
@@ -263,5 +269,26 @@ tbody td {
 }
 
 .upsert-btn:active {
+  transform: scale(0.95);
+}
+
+.insert-btn {
+  margin: 20px;
+  margin-left: 0;
+  align-self: flex-start;
+  border: none;
+  height: 100%;
+  padding: 5px 10px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.25 ease;
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+  color: white;
+  transition: all 0.25s ease;
+}
+
+.insert-btn:active {
   transform: scale(0.95);
 }

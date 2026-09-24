@@ -1,92 +1,96 @@
+@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: "Space Grotesk", sans-serif;
-}
+@layer base {
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Space Grotesk", sans-serif;
+  }
 
-button:focus-visible {
-  outline: 1px solid #5b8bff;
-  box-shadow:
-    /* Inner ring to create separation */ 0 0 0 5px rgba(91, 139, 255, 0.4),
-    /* Soft outer blur using your color with opacity */ 0 4px 10px
-      rgba(0, 0, 0, 0.1);
-}
+  button:focus-visible {
+    outline: 1px solid #5b8bff;
+    box-shadow:
+    /* Inner ring to create separation */
+      0 0 0 5px rgba(91, 139, 255, 0.4),
+      /* Soft outer blur using your color with opacity */ 0 4px 10px
+        rgba(0, 0, 0, 0.1);
+  }
 
-input,
-textarea {
-  outline: none;
-}
+  input,
+  textarea {
+    outline: none;
+  }
 
-html,
-body {
-  max-width: 100%;
-  width: 100%;
-  max-height: 100dvh;
-  height: 100dvh;
-  overflow: hidden;
-}
+  html,
+  body {
+    max-width: 100%;
+    width: 100%;
+    max-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
 
-#root {
-  max-width: 100%;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+  #root {
+    max-width: 100%;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
 
-.friday-ai {
-  height: 100%;
-  width: 100%;
-  background: #0b0f16;
-  overflow: hidden;
-}
+  .friday-ai {
+    height: 100%;
+    width: 100%;
+    background: #0b0f16;
+    overflow: hidden;
+  }
 
-.page-content {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+  .page-content {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 
-:root {
-  --dark-border: #ffffff1f;
-  --sidebar-bg: #20232973;
-  --bg-panel: #14161b;
-  --text-primary: #f5f5f7;
-  --text-secondary: #a8a8b3;
-  --message: #202631;
-  --logo-color: #8b7cf6;
-  --purple: #7c3aed;
-  --violet: #8b5cf6;
-  --blue: #3b82f6;
-  --bright-blue: #5b8bff;
-  --bright-cyan: #4fd8ff;
-  --quick-hover: #8b5cf614;
-  --quick-border-hover: #8b5cf659;
-  --quick-icon: #8b5cf659;
-}
+  :root {
+    --dark-border: #ffffff1f;
+    --sidebar-bg: #20232973;
+    --bg-panel: #14161b;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a8a8b3;
+    --message: #202631;
+    --logo-color: #8b7cf6;
+    --purple: #7c3aed;
+    --violet: #8b5cf6;
+    --blue: #3b82f6;
+    --bright-blue: #5b8bff;
+    --bright-cyan: #4fd8ff;
+    --quick-hover: #8b5cf614;
+    --quick-border-hover: #8b5cf659;
+    --quick-icon: #8b5cf659;
+  }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--sidebar-bg);
-}
+  ::-webkit-scrollbar-track {
+    background: var(--sidebar-bg);
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--sidebar-bg);
-  border-radius: 10px;
-  border: 2px solid #0c1014;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--sidebar-bg);
+    border-radius: 10px;
+    border: 2px solid #0c1014;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--bright-cyan);
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--bright-cyan);
+  }
 
-::selection {
-  background: var(--text-secondary);
-  color: black;
+  ::selection {
+    background: var(--text-secondary);
+    color: black;
+  }
 }
