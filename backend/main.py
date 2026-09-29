@@ -27,12 +27,18 @@ from .friday_modules.desktop_module.app_registry.create_registry import create_r
 from .friday_modules.desktop_module.app_registry import registry
 from .friday_modules.persistent_memory import locations
 from .friday_modules.persistent_memory.setting_endpoints import setting_endpoints
+from .friday_modules.persistent_memory.general_db_operations import get_name
+from .friday_modules.pdf_assistant_module.pdf_ass_endpoints import pdf_upload_endpoints
+# from faster_whisper import WhisperModel
+# from .friday_modules.speech_to_text_module import whisper_model
+# from .friday_modules.speech_to_text_module.speech_to_text_endpoints import speech_to_text_endpoint
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db()
     settingDb()
+    name = get_name()
 
     conn = get_conn_obj()
     locations.locations = fetch_locations(conn)
@@ -40,9 +46,11 @@ async def lifespan(app: FastAPI):
 
     registry.registry = create_registry()
 
+    # whisper_model.whisper_model = WhisperModel('small.en', device='cpu', compute_type='int8')
+
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
-    # app.state.speaker.tts('Hi, I am Friday. How can I help you')
+    # app.state.speaker.tts(f'Hi {name}, Friday here. How can I help you')
     yield
 
 
@@ -60,3 +68,5 @@ app.add_middleware(
 app.include_router(llm_prompt_router)
 app.include_router(memory_endpoints)
 app.include_router(setting_endpoints)
+app.include_router(pdf_upload_endpoints)
+# app.include_router(speech_to_text_endpoint)

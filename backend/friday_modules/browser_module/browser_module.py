@@ -62,7 +62,7 @@ class BrowserModule:
                 chunk = text[
                     (chunk_num * chunk_size) : (chunk_num * chunk_size) + chunk_size
                 ]
-                if chunk_size == 20:
+                if chunk_num == 20:
                     break
                 if chunk:
                     content = generate_content(chunk.strip())
@@ -84,7 +84,7 @@ class BrowserModule:
             if browser:
                 browser.close()
             if engine:
-                engine.stop()
+                engine.stop() 
 
     def execute(self, task):
         action = self.actions.get(task.action)

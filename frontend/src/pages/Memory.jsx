@@ -29,7 +29,7 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
       setLocations({ details: data, error: "" });
     };
     try {
-     fetchData();
+      fetchData();
     } catch (err) {
       setAlert(err.message);
     }
@@ -49,10 +49,6 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
     runFetchLocationIndirect();
   }, [searchedQuery]);
 
-  useEffect(() => {
-    console.log(pickedFolder);
-  }, [pickedFolder]);
-
   const deletePaths = async () => {
     let foldernameDict = toDelete.map((ele) => ({ f_name: ele }));
     try {
@@ -63,6 +59,7 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
         setLocations({ details: data, error: "" });
       });
       setToDelete([]);
+      setSelectAll(false);
       tableRef.current
         .querySelectorAll('input[type="checkbox"')
         .forEach((ele) => (ele.checked = false));
@@ -87,19 +84,21 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
 
   const insertPaths = async () => {
     try {
-      if(pickedFolder.length == 0) {
-        console.log(pickedFolder)
-        setAlert({msg: 'No Paths Selected. Select a path to insert it.', state: true})
+      if (pickedFolder.length == 0) {
+        console.log(pickedFolder);
+        setAlert({
+          msg: "No Paths Selected. Select a path to insert it.",
+          state: true,
+        });
         return;
       }
       let response = await upsertLocations(pickedFolder);
       if (response.message) {
         setAlert({ msg: response.message, state: true });
-        console.log(locations)
-        setPickFolder([])
-        await FetchLocations().then(data => {
-          setLocations({details: data, error: ''})
-        })
+        setPickFolder([]);
+        await FetchLocations().then((data) => {
+          setLocations({ details: data, error: "" });
+        });
       }
     } catch (err) {
       setAlert({ msg: err.message, state: true });
@@ -144,17 +143,18 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
                     title="Select All"
                     type="checkbox"
                     onClick={() => {
-                      let names = locations.details.map((ele) => ele[1]);
-                      setToDelete(names);
                       if (tbodyRef.current && !selectAll) {
                         tbodyRef.current
                           .querySelectorAll('input[type="checkbox"]')
                           .forEach((ele) => (ele.checked = true));
+                        let names = locations.details.map((ele) => ele[1]);
+                        setToDelete(names);
                         setSelectAll(true);
                       } else if (tbodyRef.current && selectAll) {
                         tbodyRef.current
                           .querySelectorAll('input[type="checkbox"]')
                           .forEach((ele) => (ele.checked = false));
+                        setToDelete([]);
                         setSelectAll(false);
                       }
                     }}
@@ -220,9 +220,14 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
           </button>
         </div>
         <div className="section-2">
-          <button className="upsert-btn" onClick={openFolderPicker}>
-            <i className="ti ti-plus"></i> Add Path
-          </button>
+          <div className="btns flex justify-start items-center w-full">
+            <button className="upsert-btn" onClick={openFolderPicker}>
+              <i className="ti ti-plus"></i> Add Path
+            </button>
+            <button className="insert-btn" onClick={insertPaths}>
+              Insert Paths
+            </button>
+          </div>
           <table className="upsert-table">
             <thead>
               <tr>
@@ -234,16 +239,17 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
               {pickedFolder.map((path, id) => (
                 <>
                   <tr key={id}>
-                    <td>{path.split("\\").pop() ? path.split('\\').pop() : path[0].toUpperCase()}</td>
+                    <td>
+                      {path.split("\\").pop()
+                        ? path.split("\\").pop()
+                        : path[0].toUpperCase()}
+                    </td>
                     <td>{path}</td>
                   </tr>
                 </>
               ))}
             </tbody>
           </table>
-          <button className="insert-btn" onClick={insertPaths}>
-            Insert Paths
-          </button>
         </div>
       </div>
     </>

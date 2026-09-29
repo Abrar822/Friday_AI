@@ -8,6 +8,7 @@ import Memory from "./pages/Memory";
 import Sidebar from "./components/Sidebar";
 import Chatbox from "./components/Chatbox";
 import Alert from "./components/Alert";
+// import VoiceToText from "./components/VoiceToText";
 import { fetchSetting } from "./helper/setting_api";
 
 function App() {
@@ -45,11 +46,12 @@ function App() {
 
   return (
     <>
+      {/* <VoiceToText /> */}
       <div className="friday-ai">
         {alert.state && <Alert msg={alert.msg} />}
         {/* <Navbar menuBtnRef={menuBtnRef} /> */}
         <Sidebar menuBtnRef={menuBtnRef} />
-        <Chatbox setState={setState} />
+        <Chatbox setState={setState} setAlert={setAlert} />
         <div className="page-content">
           <Routes>
             <Route path="/" element={<Dashboard state={state} setting={setting} />} />

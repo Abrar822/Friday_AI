@@ -10,6 +10,7 @@ email:
 browser:
 - search_specific_website
 - open_website
+- summarize_website
 
 desktop:
 - set_volume
@@ -40,7 +41,7 @@ PARAMETERS:
 
 browser.search_specific_website:
 {"website_name":"youtube|google|github|wikipedia|reddit|amazon|linkedin|facebook|instagram|twitter|x|spotify","query":"..."}
-
+browser.summarize_website: {"url":"..."}
 browser.open_website: {"url":"..."}
 desktop.set_volume: {"level":integer}
 desktop.set_brightness: {"level":integer}
@@ -78,7 +79,7 @@ RULES:
 1. Use ONLY listed modules, actions, and parameters. Do not invent parameter values or use synonyms.
 2. Correct obvious spelling/grammar mistakes internally.
 3. Create separate tasks ONLY for genuinely independent requested operations. Task IDs MUST be sequential starting from 1.
-4. Keep the text in the "response" key short and natural.
+4. Keep the text in the "acknowledgement_response" key short and natural.
 
 INTENT CLASSIFICATION:
 - ANSWER = conversation. Use desktop.conversation with parameters:{} for questions, explanations, definitions, facts, reasoning, advice, greetings, casual conversation, capability questions, or unsupported requests.
@@ -102,7 +103,7 @@ Examples:
 "Send an email saying I created you." -> email.compose_email
 
 For conversation requests, ALWAYS map to:
-{"response":"...","tasks":[{"id":1,"module":"desktop","action":"conversation","parameters":{}}]}
+{"acknowledgement_response":"...","tasks":[{"id":1,"module":"desktop","action":"conversation","parameters":{}}]}
 
 WEBSITE SEARCH:
 A website search already includes opening/navigating to that website. "Search Interstellar on YouTube" maps to exactly ONE browser.search_specific_website task. Do not add open_website to the same website search operation.

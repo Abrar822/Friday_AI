@@ -12,7 +12,7 @@ export default function FridayLogo() {
 
   return (
     <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-      <div className="absolute opacity-10 text-(--text-primary) text-[160px] z-2 tracking-widest">FRIDAY</div>
+      <div className="absolute opacity-15 text-(--text-primary) text-[160px] z-2 tracking-widest">FRIDAY</div>
       <svg
       className="animate-[fadeIn_5s_ease-in-out_infinite_alternate] absolute z-1"
       width="300"

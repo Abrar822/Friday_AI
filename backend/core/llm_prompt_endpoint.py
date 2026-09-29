@@ -17,7 +17,7 @@ def generate_response(request: LLMRequestModel, req: Request):
 
         data = TaskRouterResponse.model_validate(data)
 
-        req.app.state.speaker.tts(data.response)
+        req.app.state.speaker.tts(data.acknowledgement_response)
 
         result = req.app.state.ai.execute(data.tasks)
         print("result", result)
@@ -25,7 +25,7 @@ def generate_response(request: LLMRequestModel, req: Request):
         for res in result:
             req.app.state.speaker.tts(res)
 
-        return {"response": [data.response] + result}
+        return {"response": [data.acknowledgement_response] + result}
 
     except Exception as err:
         print('llm endpoint', repr(data))

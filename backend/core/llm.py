@@ -4,14 +4,14 @@ from .system_prompt import system_prompt
 
 FRIDAY_GRAMMAR = r"""
 # Allow structural spaces anywhere between tokens safely
-root ::= ws "{" ws "\"response\"" ws ":" ws string ws "," ws "\"tasks\"" ws ":" ws task-list ws "}" ws
+root ::= ws "{" ws "\"acknowledgement_response\"" ws ":" ws string ws "," ws "\"tasks\"" ws ":" ws task-list ws "}" ws
 task-list ::= "[" ws (task (ws "," ws task)*)? ws "]"
 
 task ::= "{" ws "\"id\"" ws ":" ws integer ws "," ws "\"module\"" ws ":" ws module-types ws "," ws "\"action\"" ws ":" ws action-types ws "," ws "\"parameters\"" ws ":" ws parameters-object ws "}"
 
 module-types ::= "\"email\"" | "\"browser\"" | "\"desktop\""
 
-action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\""
+action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\""
 
 # Flexible object for parameters
 parameters-object ::= "{" ws (string ws ":" ws value (ws "," ws string ws ":" ws value)*)? ws "}"

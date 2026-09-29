@@ -13,7 +13,7 @@ export default function Dashboard({ state, setting }) {
             </h2>
             <h2>How can I help you today?</h2>
           </div>
-          <div className="state font-bold tracking-widest opacity-70 font-[Orbitron]">{state}...</div>
+          <div className="state font-bold tracking-widest opacity-70 text-(--text-secondary) text-sm animate-pulse">{state}...</div>
           <div className="quick-actions font-extrabold tracking-wider opacity-70">
             <button className="quick-action">
               <span className="quick-action-icon">

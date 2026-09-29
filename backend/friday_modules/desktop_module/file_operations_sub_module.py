@@ -4,7 +4,12 @@ import os
 from send2trash import send2trash
 import shutil
 from ..persistent_memory import locations
-from ..persistent_memory.memory_operations import upsert, delete, rename, fetch_locations
+from ..persistent_memory.memory_operations import (
+    upsert,
+    delete,
+    rename,
+    fetch_locations,
+)
 from ..persistent_memory.db import get_conn_obj
 
 
@@ -106,6 +111,8 @@ class FileOperationsSubModule:
             return f"Folder '{folder_to_move}' was not found inside '{source_parent_folder}'."
 
         new_folder_path = destination_folder_path / folder_to_move
+        if new_folder_path.exists():
+            return f"Folder '{folder_to_move}' already exists on machine."
         try:
             msg = f"Folder {folder_to_move} moved successfully."
             shutil.move(actual_folder_path, destination_folder_path)
@@ -118,8 +125,6 @@ class FileOperationsSubModule:
 
             if res["state"] and res["exist"]:
                 msg += " Folder Path updated successfully in Friday memory."
-            elif res["state"] and not res["exist"]:
-                msg += " Folder Path not updated, as it is not registered in Friday memory."
             elif not res["state"]:
                 msg += " Folder Path cannot be updated, as some error occurred."
             return msg
@@ -180,7 +185,7 @@ class FileOperationsSubModule:
         folder_path.mkdir(parents=True, exist_ok=True)
 
         file_path = folder_path / filename
-        if file_path.exists():
+        if file_path.is_file():
             return f"File '{filename}' already exists inside '{folder_path}'."
 
         file_path.write_text(content, encoding="utf-8")
@@ -197,12 +202,15 @@ class FileOperationsSubModule:
         if not location_list:
             return f"Folder '{destination_folder}' is not registered in Friday memory."
 
+        folder_path = Path(location_list[0]["location"])
+        if not folder_path.exists():
+            return f"Folder '{foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
+
         folder_path = Path(location_list[0]["location"]) / foldername
         if folder_path.exists():
             return f"Folder '{foldername}' already exists on machine."
 
-        folder_path.mkdir(parents=True, exist_ok=True)
-        os.startfile(folder_path)
+        folder_path.mkdir(parents=True)
         return f"Folder '{foldername}' created inside folder '{destination_folder}' successfully."
 
     def close_file(self, task):
@@ -375,8 +383,6 @@ class FileOperationsSubModule:
 
         if res["state"] and res["exist"]:
             msg += " Foldername updated successfully in Friday memory."
-        elif res["state"] and not res["exist"]:
-            msg += " Foldername not updated, as it is not registered in Friday memory."
         elif not res["state"]:
             msg += " Foldername cannot be updated, as some error occurred."
 

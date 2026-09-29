@@ -83,8 +83,8 @@ class OpenLocalAppParams(BaseModel):
 
 class OpenLocalApp(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['open_local_app']
+    module: Literal["desktop"]
+    action: Literal["open_local_app"]
     parameters: OpenLocalAppParams
 
 
@@ -96,8 +96,8 @@ class MoveFolderParams(BaseModel):
 
 class MoveFolder(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['move_folder']
+    module: Literal["desktop"]
+    action: Literal["move_folder"]
     parameters: MoveFolderParams
 
 
@@ -109,8 +109,8 @@ class MoveFileParams(BaseModel):
 
 class MoveFile(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['move_file']
+    module: Literal["desktop"]
+    action: Literal["move_file"]
     parameters: MoveFileParams
 
 
@@ -121,8 +121,8 @@ class SearchFileParams(BaseModel):
 
 class SearchFile(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['search_file']
+    module: Literal["desktop"]
+    action: Literal["search_file"]
     parameters: SearchFileParams
 
 
@@ -133,8 +133,8 @@ class SearchFolderParams(BaseModel):
 
 class SearchFolder(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['search_folder']
+    module: Literal["desktop"]
+    action: Literal["search_folder"]
     parameters: SearchFolderParams
 
 

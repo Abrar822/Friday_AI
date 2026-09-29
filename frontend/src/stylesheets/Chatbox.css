@@ -108,6 +108,82 @@
   word-break: break-word;
 }
 
+.files-show {
+  position: absolute;
+  color: var(--text-primary);
+  display: flex;
+  height: 50px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  top: -45px;
+  padding: 2px 5px;
+  padding-right: 8px;
+  background: transparent;
+  backdrop-filter: blur(14px);
+}
+
+.files-show::-webkit-scrollbar {
+  display: none;
+}
+
+.files-show .name-box {
+  position: relative;
+  width: max-content;
+  flex-shrink: 0;
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  border: 1px solid var(--dark-border);
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+}
+
+.upload-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #b06bff, #5b8bff);
+  color: white;
+  border-radius: 8px;
+  height: 30px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
+  transition: all 0.25 ease;
+  flex-shrink: 0;
+}
+
+.upload-btn:active {
+	transform: scale(0.95);
+}
+
+.file-cross-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: -6px;
+  top: -10px;
+  width: 17px;
+  height: 17px;
+  font-size: 12px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  color: var(--color-red-400);
+  cursor: pointer;
+  transition: all 0.25s ease-in;
+}
+
+.file-cross-btn:active {
+  transform: scale(0.97);
+}
+
 .chat-input {
   align-self: center;
   display: flex;
@@ -120,9 +196,9 @@
   position: absolute;
   bottom: 0px;
   background: transparent;
-  backdrop-filter: blur(14px);
+  /* backdrop-filter: blur(14px); */
   border: none;
-  overflow: hidden;
+  /* overflow: hidden; */
   padding: 5px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -156,6 +232,15 @@
   font-size: 18px;
   border: none;
   transition: all 0.25 ease;
+}
+
+.add-btn.block {
+  opacity: 0.5;
+  cursor: no-drop;
+}
+
+.add-btn.block:active {
+	transform: scale(1);
 }
 
 .send-btn:active, .add-btn:active {

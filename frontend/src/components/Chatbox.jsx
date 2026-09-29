@@ -1,24 +1,37 @@
 import "../stylesheets/Chatbox.css";
 import { fastapiConnect } from "../helper/FastapiConnect";
+import {
+  pdfUpload,
+  deletePdf,
+  queryRequest,
+  getData,
+} from "../helper/pdf_assistant_api";
 
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 
-export default function Chatbox({ setState }) {
+export default function Chatbox({ setState, setAlert }) {
   const draggerRef = useRef(null);
   const chatboxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatInputRef = useRef(null);
   const chatSectionRef = useRef(null);
+  const [uploader, setUploader] = useState(false);
 
   const [messages, setMessages] = useState([
     {
       type: "bot-message",
-      message: "Hi, I am Friday. How can I help you?",
+      message: "Hi, Friday here. How can I help you?",
     },
   ]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const uploadFileRef = useRef(null);
+  const [pdfs, setPdfs] = useState([]);
+  const [storedFiles, setStoredFiles] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
+
+  // dragger
   useEffect(() => {
     let draggable = false;
     const dragger = draggerRef.current;
@@ -56,11 +69,84 @@ export default function Chatbox({ setState }) {
     };
   }, []);
 
+  // chatcontainer scrolls down each time a msg inserted
   useEffect(() => {
     if (chatSectionRef.current) {
       chatSectionRef.current.scrollTop = chatSectionRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const uploadFile = async () => {
+    let formData = new FormData();
+    pdfs.forEach((pdfObj) => {
+      formData.append("files", pdfObj.file);
+      formData.append("doc_ids", pdfObj.doc_id);
+    });
+    const upload = async () => {
+      try {
+        setUploader(true);
+        let filenames = await pdfUpload(formData);
+        pdfs.forEach((pdf) => {
+          let exist = false;
+          for (let fileObj of filenames) {
+            if (fileObj.filename === pdf.file.name) {
+              exist = true;
+              break;
+            }
+          }
+          if (!exist) {
+            throw new Error("Pdf upload failed");
+          }
+        });
+        setAlert({ msg: "Pdfs uploaded successfully.", state: true });
+        setIsUploaded(true);
+      } catch (err) {
+        setAlert({ msg: "PDF upload failed.", state: true });
+      } finally {
+        setUploader(false);
+      }
+    };
+    upload();
+  };
+
+  const deletePdfs = async () => {
+    try {
+      setUploader(true);
+      let message = await deletePdf();
+      setAlert({ msg: "All uploaded pdfs removed.", state: true });
+      setPdfs([]);
+      setIsUploaded(false);
+    } catch (err) {
+      setAlert({ msg: err.message, state: true });
+    } finally {
+      setUploader(false);
+    }
+  };
+
+  // storing the filenames along with their doc_id for display
+  useEffect(() => {
+    let names = pdfs.map((pdf) => ({
+      filename: pdf.file.name,
+      doc_id: pdf.doc_id,
+    }));
+    setStoredFiles(names);
+  }, [pdfs]);
+
+  // On refresh get the stored data unless deleted manually
+  useEffect(() => {
+    const fetchData = async () => {
+      let data = await getData();
+      if(data.length > 0) {
+        setStoredFiles(data);
+        setIsUploaded(true); 
+      }
+    };
+    try {
+      fetchData();
+    } catch (err) {
+      setAlert("Failed to Fetch uploaded Pdfs.");
+    }
+  }, []);
 
   return (
     <>
@@ -78,7 +164,13 @@ export default function Chatbox({ setState }) {
             </span>
             <span className="chat-title font-bold">Chat</span>
           </div>
-          <div className="chat-section" ref={chatSectionRef}>
+          <div
+            className="chat-section"
+            style={{
+              height: isUploaded ? "calc(100% - 170px)" : "calc(100% - 120px)",
+            }}
+            ref={chatSectionRef}
+          >
             {messages.map((msg, idx) => (
               <pre className={msg.type} key={idx}>
                 {msg.message}
@@ -95,7 +187,63 @@ export default function Chatbox({ setState }) {
             )}
 
             <div className="chat-input" ref={chatInputRef}>
-              <button className="add-btn" title="Add Pdf">
+              {storedFiles.length > 0 && (
+                <div className="files-show">
+                  <button
+                    title={
+                      !isUploaded ? "Upload Pdfs" : "Delete all uploaded pdfs"
+                    }
+                    className="upload-btn"
+                    onClick={!isUploaded ? uploadFile : deletePdfs}
+                  >
+                    {uploader && (
+                      <div className="w-4 h-4 border-[transparent] border-r-(--text-primary) border-2 border-t-(--text-primary) rounded-full animate-spin"></div>
+                    )}
+                    {!isUploaded ? "Upload" : "Delete"}
+                  </button>
+                  {storedFiles.map((file) => (
+                    <div className="name-box" key={file.doc_id}>
+                      {file.filename}
+                      {!isUploaded && (
+                        <div
+                          className="file-cross-btn"
+                          onClick={() => {
+                            let updatedPdfs = pdfs.filter(
+                              (pdfObj) => pdfObj.doc_id != file.doc_id,
+                            );
+                            setPdfs(updatedPdfs);
+                          }}
+                        >
+                          <i className="ti ti-x"></i>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <input
+                type="file"
+                multiple
+                accept=".pdf"
+                style={{ display: "none" }}
+                ref={uploadFileRef}
+                onChange={(e) => {
+                  let files = Array.from(e.target.files);
+                  let fileArr = files.map((file) => ({
+                    file: file,
+                    doc_id: crypto.randomUUID(),
+                  }));
+                  setPdfs((prev) => [...prev, ...fileArr]);
+                }}
+              />
+              <button
+                className={`add-btn${isUploaded ? " block" : ""}`}
+                title={!isUploaded ? "Add Pdf" : "Cannot add pdf"}
+                onClick={() => {
+                  if (isUploaded) return;
+                  uploadFileRef.current.click();
+                }}
+              >
                 <i className="ti ti-plus"></i>
               </button>
               <textarea
@@ -116,12 +264,25 @@ export default function Chatbox({ setState }) {
                     setLoading(true);
                     setState("Working on it");
                     try {
-                      let response = await fastapiConnect(prompt);
-                      let newMessages = response.response.map((msg) => ({
-                        type: "bot-message",
-                        message: msg,
-                      }));
-                      setMessages((prev) => [...prev, ...newMessages]);
+                      let response, newMessages;
+                      if (!isUploaded) {
+                        response = await fastapiConnect(prompt);
+                        // need to update in memory ui table after folder state update
+                        newMessages = response.response.map((msg) => ({
+                          type: "bot-message",
+                          message: msg,
+                        }));
+                        setMessages((prev) => [...prev, ...newMessages]);
+                      } else {
+                        response = await queryRequest(prompt);
+                        setMessages((prev) => [
+                          ...prev,
+                          {
+                            type: "bot-message",
+                            message: response,
+                          },
+                        ]);
+                      }
                     } finally {
                       setLoading(false);
                       setState("Listening");
@@ -158,12 +319,24 @@ export default function Chatbox({ setState }) {
                   setLoading(true);
                   setState("Working on it");
                   try {
-                    let response = await fastapiConnect(prompt);
-                    let newMessages = response.response.map((msg) => ({
-                      type: "bot-message",
-                      message: msg,
-                    }));
-                    setMessages((prev) => [...prev, ...newMessages]);
+                    let response, newMessages;
+                    if (!isUploaded) {
+                      response = await fastapiConnect(prompt);
+                      newMessages = response.response.map((msg) => ({
+                        type: "bot-message",
+                        message: msg,
+                      }));
+                      setMessages((prev) => [...prev, ...newMessages]);
+                    } else {
+                      response = await queryRequest(prompt);
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          type: "bot-message",
+                          message: response,
+                        },
+                      ]);
+                    }
                   } finally {
                     setLoading(false);
                     setState("Listening");

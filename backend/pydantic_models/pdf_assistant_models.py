@@ -2,15 +2,15 @@ from pydantic import BaseModel, Field
 from typing import Literal, Annotated
 
 
-class DummyParams(BaseModel):
-    dum: str
+class PdfAssistant(BaseModel):
+    query: str
 
 
-class Dummy(BaseModel):
+class PdfAssistantParams(BaseModel):
     id: int
     module: Literal["pdf"]
-    action: Literal["pdf_assist"]
-    parameters: DummyParams
+    action: Literal["pdf_assistant"]
+    parameters: PdfAssistantParams
 
 
-PdfAssistantTask = Annotated[Dummy, Field(discriminator="action")]
+PdfAssistantTask = Annotated[PdfAssistantParams, Field(discriminator="action")]

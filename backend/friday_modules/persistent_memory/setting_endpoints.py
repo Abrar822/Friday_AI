@@ -25,7 +25,7 @@ def set_data(data: SettingData, conn=Depends(get_connection)):
         )
         if cur.rowcount > 0:
             conn.commit()
-            return {"message": "Data inserted successfully."}
+            return {"message": "Changes saved successfully."}
     except Exception as err:
         if conn:
             conn.rollback()

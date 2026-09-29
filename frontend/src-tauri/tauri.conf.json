@@ -13,12 +13,14 @@
     "windows": [
       {
         "title": "Friday",
-        "width": 900,
+        "width": 1050,
         "height": 600,
         "minWidth": 900,
+        "maxWidth": 1400,
         "minHeight": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "center": true
       }
     ],
     "security": {

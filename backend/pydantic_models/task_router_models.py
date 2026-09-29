@@ -13,5 +13,5 @@ Task = Annotated[
 
 
 class TaskRouterResponse(BaseModel):
-    response: str
+    acknowledgement_response: str
     tasks: list[Task]
