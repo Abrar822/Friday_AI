@@ -15,7 +15,7 @@
         "title": "Friday",
         "width": 1050,
         "height": 600,
-        "minWidth": 900,
+        "minWidth": 1000,
         "maxWidth": 1400,
         "minHeight": 600,
         "resizable": true,

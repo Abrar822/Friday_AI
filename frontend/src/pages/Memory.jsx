@@ -8,7 +8,7 @@ import {
   upsertLocations,
 } from "../helper/MemoryConnect";
 
-export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
+export default function Memory({ setAlert, pickedFolder, setPickFolder, setTableUpdate, tableUpdate }) {
   const searchRef = useRef(null);
   const tableRef = useRef(null);
   const tbodyRef = useRef(null);
@@ -24,16 +24,18 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder }) {
 
   // Runs only initially to fetch location
   useEffect(() => {
+    if(!tableUpdate) return;
     const fetchData = async () => {
       let data = await FetchLocations();
       setLocations({ details: data, error: "" });
     };
     try {
       fetchData();
+      setTableUpdate(false)
     } catch (err) {
       setAlert(err.message);
     }
-  }, []);
+  }, [tableUpdate]);
 
   // To indirectly run the fetch location when user erases the input
   useEffect(() => {

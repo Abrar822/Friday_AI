@@ -9,7 +9,7 @@ import {
 
 import { use, useEffect, useRef, useState } from "react";
 
-export default function Chatbox({ setState, setAlert }) {
+export default function Chatbox({ setState, setAlert, setTableUpdate }) {
   const draggerRef = useRef(null);
   const chatboxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -30,6 +30,7 @@ export default function Chatbox({ setState, setAlert }) {
   const [pdfs, setPdfs] = useState([]);
   const [storedFiles, setStoredFiles] = useState([]);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [copied, setCopied] = useState(null);
 
   // dragger
   useEffect(() => {
@@ -123,6 +124,18 @@ export default function Chatbox({ setState, setAlert }) {
     }
   };
 
+  const copy = async (text) => {
+    await navigator.clipboard.writeText(text)
+  }
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setCopied(null)
+    }, 1000)
+    return () => {
+      clearTimeout(id);
+    }
+  }, [copied])
+
   // storing the filenames along with their doc_id for display
   useEffect(() => {
     let names = pdfs.map((pdf) => ({
@@ -136,9 +149,9 @@ export default function Chatbox({ setState, setAlert }) {
   useEffect(() => {
     const fetchData = async () => {
       let data = await getData();
-      if(data.length > 0) {
+      if (data.length > 0) {
         setStoredFiles(data);
-        setIsUploaded(true); 
+        setIsUploaded(true);
       }
     };
     try {
@@ -150,7 +163,7 @@ export default function Chatbox({ setState, setAlert }) {
 
   return (
     <>
-      <div className="chat-box" ref={chatboxRef}>
+      <div className="chat-box shadow-[-4px_0_8px_rgba(0,0,0,0.25)]" ref={chatboxRef}>
         <div className="dragger" ref={draggerRef}></div>
         <div className="chat-container">
           <div className="cross-btn-container">
@@ -172,9 +185,17 @@ export default function Chatbox({ setState, setAlert }) {
             ref={chatSectionRef}
           >
             {messages.map((msg, idx) => (
-              <pre className={msg.type} key={idx}>
-                {msg.message}
-              </pre>
+              <div className={`${msg.type === 'user-message'? 'justify-end' : 'justify-start'} flex items-end gap-1 w-full relative`}>
+                <pre className={msg.type} key={idx}>
+                  {msg.message}
+                </pre>
+                {msg.type == "bot-message" && (
+                  <i className={`${copied === idx ? "ti ti-check text-(--text-secondary) text-[14px]" : "ti ti-copy text-(--text-secondary) cursor-pointer text-[14px]"} mb-[10px]`} onClick={() => {
+                    setCopied(idx)
+                    copy(msg.message)
+                  }}></i>
+                )}
+              </div>
             ))}
             {loading && (
               <div className="loading bot-message" key={12345}>
@@ -267,7 +288,13 @@ export default function Chatbox({ setState, setAlert }) {
                       let response, newMessages;
                       if (!isUploaded) {
                         response = await fastapiConnect(prompt);
-                        // need to update in memory ui table after folder state update
+                        // To update in memory ui table after folder state update
+                        response.response.forEach((msg) => {
+                          if (msg.includes("folder")) {
+                            setTableUpdate(true);
+                          }
+                        });
+                    
                         newMessages = response.response.map((msg) => ({
                           type: "bot-message",
                           message: msg,
@@ -322,6 +349,12 @@ export default function Chatbox({ setState, setAlert }) {
                     let response, newMessages;
                     if (!isUploaded) {
                       response = await fastapiConnect(prompt);
+                      // To update in memory ui table after folder state update
+                      response.response.forEach((msg) => {
+                        if (msg.includes("folder")) {
+                          setTableUpdate(true);
+                        }
+                      });
                       newMessages = response.response.map((msg) => ({
                         type: "bot-message",
                         message: msg,

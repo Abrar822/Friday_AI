@@ -19,6 +19,7 @@ function App() {
   const [setting, setSetting] = useState({
     name: "",
   });
+  const [tableUpdate, setTableUpdate] = useState(false);
 
   useEffect(() => {
     let id;
@@ -51,7 +52,7 @@ function App() {
         {alert.state && <Alert msg={alert.msg} />}
         {/* <Navbar menuBtnRef={menuBtnRef} /> */}
         <Sidebar menuBtnRef={menuBtnRef} />
-        <Chatbox setState={setState} setAlert={setAlert} />
+        <Chatbox setState={setState} setAlert={setAlert} setTableUpdate={setTableUpdate}/>
         <div className="page-content">
           <Routes>
             <Route path="/" element={<Dashboard state={state} setting={setting} />} />
@@ -60,6 +61,8 @@ function App() {
               path="/memory"
               element={
                 <Memory
+                  setTableUpdate={setTableUpdate}
+                  tableUpdate={tableUpdate}
                   setAlert={setAlert}
                   pickedFolder={pickedFolder}
                   setPickFolder={setPickFolder}

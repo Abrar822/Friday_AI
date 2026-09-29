@@ -211,6 +211,7 @@ class FileOperationsSubModule:
             return f"Folder '{foldername}' already exists on machine."
 
         folder_path.mkdir(parents=True)
+        os.startfile(folder_path)
         return f"Folder '{foldername}' created inside folder '{destination_folder}' successfully."
 
     def close_file(self, task):

@@ -14,7 +14,7 @@
 
 .section-1 {
   width: 100%;
-  max-width: 730px;
+  max-width: 830px;
   min-height: 500px;
   flex-shrink: 0;
   background: var(--sidebar-bg);
@@ -194,7 +194,7 @@ tbody td {
 
 .section-2 {
   width: 100%;
-  max-width: 730px;
+  max-width: 830px;
   flex-shrink: 0;
   background: var(--sidebar-bg);
   border: 1px solid var(--dark-border);
