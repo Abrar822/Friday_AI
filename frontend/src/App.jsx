@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
 import "./App.css";
 
 import Dashboard from "./pages/Dashboard";
@@ -28,14 +29,27 @@ function App() {
 
   // STT STUFF
   useEffect(() => {
-    const handle = (e) => {
-      if (e.code === "F2") recordBtnRef.current.click();
+    const handle = async () => {
+      await register("F2", (e) => {
+        if (e.state === "Pressed") {
+          recordBtnRef.current.click();
+        }
+      });
     };
-    window.addEventListener("keydown", handle);
+    handle();
     return () => {
-      window.removeEventListener("keydown", handle);
+      unregister("f2");
     };
-  }, []);
+  }, []); // For global f2 working
+  // useEffect(() => {
+  //   const handle = (e) => {
+  //     if (e.code === "F2") recordBtnRef.current.click();
+  //   };
+  //   window.addEventListener("keydown", handle);
+  //   return () => {
+  //     window.removeEventListener("keydown", handle);
+  //   };
+  // }, []);
 
   let mediaRecorder = useRef(null);
   let audioChunks = useRef(null);
