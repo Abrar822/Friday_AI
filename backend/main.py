@@ -29,9 +29,7 @@ from .friday_modules.persistent_memory import locations
 from .friday_modules.persistent_memory.setting_endpoints import setting_endpoints
 from .friday_modules.persistent_memory.general_db_operations import get_name
 from .friday_modules.pdf_assistant_module.pdf_ass_endpoints import pdf_upload_endpoints
-# from faster_whisper import WhisperModel
-# from .friday_modules.speech_to_text_module import whisper_model
-# from .friday_modules.speech_to_text_module.speech_to_text_endpoints import speech_to_text_endpoint
+from .friday_modules.speech_to_text_module.stt_endpoints import stt_endpoints
 
 
 @asynccontextmanager
@@ -69,4 +67,4 @@ app.include_router(llm_prompt_router)
 app.include_router(memory_endpoints)
 app.include_router(setting_endpoints)
 app.include_router(pdf_upload_endpoints)
-# app.include_router(speech_to_text_endpoint)
+app.include_router(stt_endpoints)

@@ -11,10 +11,6 @@ backend/core/model/*
 backend/friday_modules/text_to_speech_module/Piper_TTS/voices/*
 backend/friday_modules/pdf_assistant_module/model/*
 
-backend/friday_modules/speech_to_text_module/*
-frontend/src/components/VoiceToText.jsx
-frontend/src/helper/Voicetotext.jsx
-frontend/public/FridayAudioProcessor.js
 backend/core/ExecutionContext.py
 
 __pycache__/

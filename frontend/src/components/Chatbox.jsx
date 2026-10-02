@@ -7,15 +7,28 @@ import {
   getData,
 } from "../helper/pdf_assistant_api";
 
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function Chatbox({ setState, setAlert, setTableUpdate }) {
+export default function Chatbox({
+  setState,
+  setAlert,
+  setTableUpdate,
+  recording,
+  startRecorder,
+  stopRecorder,
+  prompt,
+  setPrompt,
+  sendBtnRef,
+  recordBtnRef
+}) {
   const draggerRef = useRef(null);
+  const modeBox = useRef(null);
   const chatboxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatInputRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [uploader, setUploader] = useState(false);
+  const [mode, setMode] = useState({ mode: "Automation", state: false });
 
   const [messages, setMessages] = useState([
     {
@@ -23,7 +36,6 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
       message: "Hi, Friday here. How can I help you?",
     },
   ]);
-  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
 
   const uploadFileRef = useRef(null);
@@ -68,7 +80,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
       document.removeEventListener("pointermove", pointerMove);
       document.removeEventListener("pointerup", pointerUp);
     };
-  }, []);
+  }, []); // dragger
 
   // chatcontainer scrolls down each time a msg inserted
   useEffect(() => {
@@ -77,6 +89,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
     }
   }, [messages]);
 
+  // Clicking upload button
   const uploadFile = async () => {
     let formData = new FormData();
     pdfs.forEach((pdfObj) => {
@@ -110,6 +123,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
     upload();
   };
 
+  // Clicking the delete button => clearing the whole db
   const deletePdfs = async () => {
     try {
       setUploader(true);
@@ -124,17 +138,18 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
     }
   };
 
+  // Stuff to copy system response in chat container
   const copy = async (text) => {
-    await navigator.clipboard.writeText(text)
-  }
+    await navigator.clipboard.writeText(text);
+  };
   useEffect(() => {
     const id = setTimeout(() => {
-      setCopied(null)
-    }, 1000)
+      setCopied(null);
+    }, 1000);
     return () => {
       clearTimeout(id);
-    }
-  }, [copied])
+    };
+  }, [copied]); // stuff to copy system response in chat container
 
   // storing the filenames along with their doc_id for display
   useEffect(() => {
@@ -161,9 +176,26 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
     }
   }, []);
 
+  // hide the mode box
+  useEffect(() => {
+    const execute = (e) => {
+      if (!mode.state) return;
+      if (modeBox.current && !modeBox.current.contains(e.target)) {
+        setMode((prev) => ({ ...prev, state: false }));
+      }
+    };
+    document.addEventListener("mousedown", execute);
+    return () => {
+      document.removeEventListener("mousedown", execute);
+    };
+  }, [mode.state]);
+
   return (
     <>
-      <div className="chat-box shadow-[-4px_0_8px_rgba(0,0,0,0.25)]" ref={chatboxRef}>
+      <div
+        className="chat-box shadow-[-4px_0_8px_rgba(0,0,0,0.25)]"
+        ref={chatboxRef}
+      >
         <div className="dragger" ref={draggerRef}></div>
         <div className="chat-container">
           <div className="cross-btn-container">
@@ -175,7 +207,53 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
             >
               <i className="ti ti-x"></i>
             </span>
-            <span className="chat-title font-bold">Chat</span>
+            <span className="chat-title font-bold relative">Chat</span>
+            <div
+              className={`${!loading ? "cursor-pointer" : "cursor-not-allowed"} mode-changer bg-(--message) text-(--text-primary) py-1 px-3 mx-6 rounded-4xl border-[1px] border-[white]/20 border-solid flex justify-center items-center gap-1 text-[14px] w-[135px]`}
+              ref={modeBox}
+              onClick={() => {
+                if (loading) return;
+                setMode((prev) => ({ ...prev, state: !prev.state }));
+              }}
+            >
+              {mode.mode}{" "}
+              <i
+                className={`${mode.state && !loading ? "ti ti-chevron-up" : "ti ti-chevron-down"} inline-block h-full transition-all ease-in duration-750`}
+              ></i>
+              {mode.state && !loading && (
+                <div className="select absolute flex flex-col top-[45px] z-2 bg-(--message) text-(--text-primary) shadow-[14px_14px_14px_rgba(0,0,0,0.25)]">
+                  <span
+                    className="px-2 py-1 w-full inline-block border-[1px] border-[white]/20 border-solid"
+                    onClick={(e) => {
+                      setMode({ mode: "Automation", state: false });
+                      e.stopPropagation();
+                    }}
+                  >
+                    Automation
+                  </span>
+                  <span
+                    className="px-2 py-1 w-full inline-block border-[1px] border-[white]/20 border-solid cursor-pointer"
+                    onClick={(e) => {
+                      setMode({ mode: "Pdf Retrieval", state: false });
+                      e.stopPropagation();
+                    }}
+                  >
+                    Pdf Retrieval
+                  </span>
+                </div>
+              )}
+            </div>
+            <div
+              className="stt-btn text-(--text-primary) bg-transparent p-1 rounded-full border-[1px] border-solid w-[35px] h-[35px] border-[white]/20 flex justify-center items-center cursor-pointer transition-all duration-250 ease-in active:scale-95"
+              onClick={recording ? stopRecorder : startRecorder}
+              ref={recordBtnRef}
+            >
+              {recording ? (
+                <i className="ti ti-microphone"></i>
+              ) : (
+                <i className="ti ti-microphone-off"></i>
+              )}
+            </div>
           </div>
           <div
             className="chat-section"
@@ -185,15 +263,20 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
             ref={chatSectionRef}
           >
             {messages.map((msg, idx) => (
-              <div className={`${msg.type === 'user-message'? 'justify-end' : 'justify-start'} flex items-end gap-1 w-full relative`}>
+              <div
+                className={`${msg.type === "user-message" ? "justify-end" : "justify-start"} flex items-end gap-1 w-full relative`}
+              >
                 <pre className={msg.type} key={idx}>
                   {msg.message}
                 </pre>
                 {msg.type == "bot-message" && (
-                  <i className={`${copied === idx ? "ti ti-check text-(--text-secondary) text-[14px]" : "ti ti-copy text-(--text-secondary) cursor-pointer text-[14px]"} mb-[10px]`} onClick={() => {
-                    setCopied(idx)
-                    copy(msg.message)
-                  }}></i>
+                  <i
+                    className={`${copied === idx ? "ti ti-check text-(--text-secondary) text-[14px]" : "ti ti-copy text-(--text-secondary) cursor-pointer text-[14px]"} mb-[10px]`}
+                    onClick={() => {
+                      setCopied(idx);
+                      copy(msg.message);
+                    }}
+                  ></i>
                 )}
               </div>
             ))}
@@ -274,7 +357,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                 rows={1}
                 onKeyDown={async (e) => {
                   if (e.key == "Enter" && !e.shiftKey) {
-                    if (prompt.trim().length <= 0 || loading) return;
+                    if (prompt.trim().length <= 0 || loading || !/[a-zA-Z]/.test(prompt.trim())) return;
                     e.preventDefault();
                     setMessages((prev) => [
                       ...prev,
@@ -286,7 +369,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                     setState("Working on it");
                     try {
                       let response, newMessages;
-                      if (!isUploaded) {
+                      if (mode.mode === "Automation") {
                         response = await fastapiConnect(prompt);
                         // To update in memory ui table after folder state update
                         response.response.forEach((msg) => {
@@ -294,13 +377,23 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                             setTableUpdate(true);
                           }
                         });
-                    
+
                         newMessages = response.response.map((msg) => ({
                           type: "bot-message",
                           message: msg,
                         }));
                         setMessages((prev) => [...prev, ...newMessages]);
-                      } else {
+                      } else if (mode.mode === "Pdf Retrieval") {
+                        if (!isUploaded) {
+                          setMessages((prev) => [
+                            ...prev,
+                            {
+                              type: "bot-message",
+                              message: "Please upload a pdf.",
+                            },
+                          ]);
+                          return;
+                        }
                         response = await queryRequest(prompt);
                         setMessages((prev) => [
                           ...prev,
@@ -310,6 +403,16 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                           },
                         ]);
                       }
+                    } catch (err) {
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          type: "bot-message",
+                          message:
+                            "Sorry I could not process the request." +
+                            str(err.message),
+                        },
+                      ]);
                     } finally {
                       setLoading(false);
                       setState("Listening");
@@ -332,10 +435,11 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                 }}
               />
               <button
+                ref={sendBtnRef}
                 className="send-btn"
                 title="Send Prompt"
                 onClick={async () => {
-                  if (prompt.trim().length <= 0 || loading) return;
+                  if (prompt.trim().length <= 0 || loading || !/[a-zA-Z]/.test(prompt.trim())) return;
                   setMessages((prev) => [
                     ...prev,
                     { type: "user-message", message: prompt.trim() },
@@ -347,7 +451,7 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                   setState("Working on it");
                   try {
                     let response, newMessages;
-                    if (!isUploaded) {
+                    if (mode.mode === "Automation") {
                       response = await fastapiConnect(prompt);
                       // To update in memory ui table after folder state update
                       response.response.forEach((msg) => {
@@ -360,7 +464,17 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                         message: msg,
                       }));
                       setMessages((prev) => [...prev, ...newMessages]);
-                    } else {
+                    } else if (mode.mode === "Pdf Retrieval") {
+                      if (!isUploaded) {
+                        setMessages((prev) => [
+                          ...prev,
+                          {
+                            type: "bot-message",
+                            message: "Please upload a pdf.",
+                          },
+                        ]);
+                        return;
+                      }
                       response = await queryRequest(prompt);
                       setMessages((prev) => [
                         ...prev,
@@ -370,6 +484,16 @@ export default function Chatbox({ setState, setAlert, setTableUpdate }) {
                         },
                       ]);
                     }
+                  } catch (err) {
+                    setMessages((prev) => [
+                      ...prev,
+                      {
+                        type: "bot-message",
+                        message:
+                          "Sorry I could not process the request." +
+                          str(err.message),
+                      },
+                    ]);
                   } finally {
                     setLoading(false);
                     setState("Listening");

@@ -2,7 +2,7 @@ export default function Alert({msg}) {
 	return (
 		<>
 			<div className="alert-container absolute z-1 h-[50px] w-[100%] flex justify-center items-start top-[20px]">
-				<div className="msg absolute max-w-[500px] bg-[linear-gradient(135deg,#b06bff,#5b8bff)] text-(--text-primary) py-2 px-4 rounded-xl text-center flex justify-center items-center font-bold min-w-[250px]">{msg}</div>
+				<div className="msg absolute max-w-[500px] bg-[linear-gradient(135deg,#b06bff,#5b8bff)] text-(--text-primary) py-2 px-4 rounded-md text-center flex justify-center items-center font-bold min-w-[250px]">{msg}</div>
 			</div>
 		</>
 	)
