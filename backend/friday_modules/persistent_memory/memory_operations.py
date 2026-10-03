@@ -98,3 +98,75 @@ def rename(old_foldername: str, new_foldername: str, folder_path: str):
             cur.close()
         if conn:
             conn.close()
+
+
+def rename_direct(old_foldername: str, new_foldername: str, folder_path: str):
+    conn, cur = None, None
+    try:
+        conn = get_conn_obj()
+        cur = conn.cursor()
+        query = """
+        UPDATE memory SET f_name = ?, location = ? WHERE f_name = ?
+        """
+        cur.execute(query, (new_foldername.lower().strip(), folder_path, old_foldername.lower().strip()))
+        if cur.rowcount > 0:
+            conn.commit()
+            return {"state": True, "exist": True}
+        return {"state": True, "exist": False}
+    except:
+        if conn:
+            conn.rollback()
+        return {"state": False, "exist": None}
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+def delete_direct(foldername: str):
+    conn, cur = None, None
+    try:
+        conn = get_conn_obj()
+        cur = conn.cursor()
+        query = """
+        DELETE FROM memory WHERE f_name = ?
+        """
+        cur.execute(query, (foldername.lower().strip(),))
+        if cur.rowcount > 0:
+            conn.commit()
+            return {"state": True, "exist": True}
+        return {"state": True, "exist": False}
+    except:
+        if conn:
+            conn.rollback()
+        return {"state": False, "exist": None}
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+def upsert_direct(foldername: str, folder_path: str):
+    conn, cur = None, None
+    try:
+        conn = get_conn_obj()
+        cur = conn.cursor()
+        query = """
+        UPDATE memory SET location = ? WHERE f_name = ?
+        """
+        cur.execute(query, (folder_path, foldername.lower().strip()))
+        if cur.rowcount > 0:
+            conn.commit()
+            return {"state": True, "exist": True}
+        return {"state": True, "exist": False}
+    except:
+        if cur:
+            conn.rollback()
+        return {"state": False, "exist": None}
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()

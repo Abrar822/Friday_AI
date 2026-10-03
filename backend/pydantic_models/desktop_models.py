@@ -248,6 +248,52 @@ class CloseFile(BaseModel):
     parameters: CloseFileParams
 
 
+class PasteParams(BaseModel):
+    content: str
+
+
+class Paste(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["paste"]
+    parameters: PasteParams
+
+
+class RenameFolderDirectParams(BaseModel):
+    old_foldername: str
+    new_foldername: str
+
+
+class RenameFolderDirect(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["rename_folder_direct"]
+    parameters: RenameFolderDirectParams
+
+
+class DeleteFolderDirectParams(BaseModel):
+    folder_to_be_deleted_name: str
+
+
+class DeleteFolderDirect(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["delete_folder_direct"]
+    parameters: DeleteFolderDirectParams
+
+
+class MoveFolderDirectParams(BaseModel):
+    folder_to_be_moved: str
+    destination_folder: str
+
+
+class MoveFolderDirect(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["move_folder_direct"]
+    parameters: MoveFolderDirectParams
+
+
 DeskTopTask = Annotated[
     SetVolume
     | SetBrightness
@@ -271,6 +317,10 @@ DeskTopTask = Annotated[
     | RenameFile
     | RenameFolder
     | CloseFile
-    | Conversation,
+    | Conversation
+    | Paste
+    | RenameFolderDirect
+    | DeleteFolderDirect
+    | MoveFolderDirect,
     Field(discriminator="action"),
 ]

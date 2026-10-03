@@ -11,7 +11,7 @@ backend/core/model/*
 backend/friday_modules/text_to_speech_module/Piper_TTS/voices/*
 backend/friday_modules/pdf_assistant_module/model/*
 
-backend/core/ExecutionContext.py
+# backend/core/ExecutionContext.py
 
 __pycache__/
 *.pyc

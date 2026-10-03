@@ -11,7 +11,7 @@ task ::= "{" ws "\"id\"" ws ":" ws integer ws "," ws "\"module\"" ws ":" ws modu
 
 module-types ::= "\"email\"" | "\"browser\"" | "\"desktop\""
 
-action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\""
+action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\"" | "\"paste\"" | "\"delete_folder_direct\"" | "\"move_folder_direct\"" | "\"rename_folder_direct\""
 
 # Flexible object for parameters
 parameters-object ::= "{" ws (string ws ":" ws value (ws "," ws string ws ":" ws value)*)? ws "}"
@@ -23,7 +23,6 @@ number ::= ("-")? ([0-9])+ ("." ([0-9])+)? ([eE] [+-]? ([0-9])+)?
 integer ::= [0-9]+
 ws ::= [ \t\n\r]*
 """
-
 
 
 def route_task(prompt: str):

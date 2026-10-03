@@ -16,9 +16,11 @@ async def pdf_upload(
     files: list[UploadFile] = File(...), doc_ids: list[str] = Form(...)
 ):
     global model, collection, chroma_db_client
-    model, collection, chroma_db_client = load_model(
-        chroma_db_client, collection, model
-    )
+    if not model and not collection and not chroma_db_client:
+        print('model created in upload')
+        model, collection, chroma_db_client = load_model(
+            chroma_db_client, collection, model
+        )
     filenames = [
         {"filename": f.filename, "doc_id": id} for f, id in zip(files, doc_ids)
     ]
@@ -49,7 +51,7 @@ async def pdf_upload(
         for start in range(0, len(my_text), chunk_size):
             chunk = my_text[start : start + end]
             if chunk:
-                embedding = model.encode(chunk).tolist()
+                embedding = model.encode(chunk.lower()).tolist()
 
                 ids.append(f"chunk_{my_doc_id}_{start // chunk_size}")
                 embeddings.append(embedding)
@@ -82,21 +84,26 @@ def delete_files():
 def query(pdf_assist: PdfAssistant):
     global model, collection
     query = pdf_assist.query
-    embedded_query = model.encode(query).tolist()
+    embedded_query = model.encode(query.lower()).tolist()
 
     results = collection.query(query_embeddings=[embedded_query], n_results=2)
+    print(results)
     context = "".join(results["documents"][0])
-    query = f"""
-    USER QUERY: {query}
-    PDF CONTEXT: {context}
+    augmented_prompt = f"""
+    PDF CONTEXT:
+    {context}
+    USER QUESTION:
+    {query}
+    Answer the user's question using only the PDF CONTEXT.
     """
-    result = to_llm(query)
+    result = to_llm(augmented_prompt)
 
     return result
 
 
 @pdf_upload_endpoints.get("/pdf/get")
 def get_data():
+    global model, collection, chroma_db_client
     def removeDuplicates(data):
         filenames = set()
         new_data = []
@@ -105,12 +112,11 @@ def get_data():
                 new_data.append({'filename': tupl['filename'], 'doc_id': tupl['doc_id']})
                 filenames.add(tupl['filename'])
         return new_data
-
-    path = Path.home() / "Friday_AI" / "chromadb.db"
-    chroma_db_client = chromadb.PersistentClient(path=str(path))
-    collection = chroma_db_client.get_or_create_collection(
-        name="Friday_documents_collection"
-    )
+    if not model and not collection and not chroma_db_client:
+        print('model created in get')
+        model, collection, chroma_db_client = load_model(
+            chroma_db_client, collection, model
+        )
     data = collection.get(include=["metadatas"])
     data = [{"filename": d['filename'], "doc_id": d['doc_id']} for d in data['metadatas']]
     data = removeDuplicates(data)

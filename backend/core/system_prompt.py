@@ -22,13 +22,16 @@ desktop:
 - open_folder
 - delete_file
 - delete_folder
+- delete_folder_direct
 - rename_file
 - rename_folder
+- rename_folder_direct
 - close_file
 - open_local_app
 - search_folder
 - search_file
 - move_folder
+- move_folder_direct
 - move_file
 - perform_shutdown
 - perform_restart
@@ -36,6 +39,7 @@ desktop:
 - perform_sleep
 - perform_hibernation
 - conversation
+- paste
 
 PARAMETERS:
 
@@ -57,20 +61,24 @@ desktop.open_file: {"filename":"...","foldername":"..."}
 desktop.open_folder: {"foldername":"...","parent_foldername":"..."}
 desktop.delete_file: {"filename":"...","foldername":"..."}
 desktop.delete_folder: {"parent_foldername":"...","folder_to_be_deleted_name":"..."}
+desktop.delete_folder_direct: {"folder_to_be_deleted_name":"..."}
 desktop.rename_file: {"foldername":"...","filename":"...","new_filename":"..."}
 desktop.rename_folder: {"old_foldername":"...","new_foldername":"...","parent_foldername":"..."}
+desktop.rename_folder_direct: {"old_foldername":"...","new_foldername":"..."}
 desktop.close_file: {"filename":"..."}
 desktop.open_local_app: {"display_name":"..."}
 desktop.search_folder: {"parent_foldername":"...","foldername":"..."}
 desktop.search_file: {"parent_foldername":"...","filename":"..."}
 desktop.move_file: {"source_parent_folder":"...","destination_folder":"...","filename":"..."}
 desktop.move_folder: {"destination_folder":"...","source_parent_folder":"...","folder_to_move":"..."}
+desktop.move_folder_direct: {"folder_to_be_moved":"...","destination_folder":"..."}
 desktop.perform_shutdown: {}
 desktop.perform_restart: {}
 desktop.perform_locking: {}
 desktop.perform_sleep: {}
 desktop.perform_hibernation: {}
 desktop.conversation: {}
+desktop.paste: {"content":"..."}
 
 email.compose_email:
 {"subject":"...","body":"..."}
@@ -115,4 +123,9 @@ Example: "Search YouTube for Interstellar and close p.jpg." -> browser.search_sp
 FOLDER/FILE OPERATIONS:
 never modify the folder or file name by yourself.
 Example: 'open folder named d inside folder named c'. keep name d and c as it is.
+
+DIRECT FOLDER ACTIONS:
+- If parent/source folder is given, use the normal action.
+- If no parent/source folder is given, use the matching "_direct" action.
+- Never invent a parent/source folder.
 """

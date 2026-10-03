@@ -28,11 +28,10 @@ def generate_response(request: LLMRequestModel, req: Request):
         return {"response": [data.acknowledgement_response] + result}
 
     except Exception as err:
-        print('llm endpoint', repr(data))
+        print("llm endpoint", repr(data))
         req.app.state.speaker.tts("Sorry, I couldn't process that request.")
         print(str(err))
         return {"response": ["Sorry, I couldn't process that request."]}
     finally:
         print("Data returned by llm", data)
         print("result", result)
-

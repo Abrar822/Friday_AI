@@ -44,8 +44,6 @@ async def lifespan(app: FastAPI):
 
     registry.registry = create_registry()
 
-    # whisper_model.whisper_model = WhisperModel('small.en', device='cpu', compute_type='int8')
-
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
     # app.state.speaker.tts(f'Hi {name}, Friday here. How can I help you')

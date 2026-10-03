@@ -9,28 +9,14 @@ from ..persistent_memory.memory_operations import (
     delete,
     rename,
     fetch_locations,
+    rename_direct,
+    delete_direct,
+    upsert_direct
 )
 from ..persistent_memory.db import get_conn_obj
 
 
 class FileOperationsSubModule:
-
-    def __init__(self):
-        self.actions = {
-            "create_file": self.create_file,
-            "create_folder": self.create_folder,
-            "open_file": self.open_file,
-            "open_folder": self.open_folder,
-            "delete_file": self.delete_file,
-            "delete_folder": self.delete_folder,
-            "rename_file": self.rename_file,
-            "rename_folder": self.rename_folder,
-            "close_file": self.close_file,
-            "move_folder": self.move_folder,
-            "move_file": self.move_file,
-            "search_file": self.search_file,
-            "search_folder": self.search_folder,
-        }
 
     def filter_location_list(self, locations: list, foldername: str):
         return list(
@@ -343,6 +329,7 @@ class FileOperationsSubModule:
 
         new_path = file_path.with_name(new_filename)
         file_path.rename(new_path)
+        os.startfile(file_path)
         return f"File '{filename}' renamed to '{new_filename}' successfully."
 
     def rename_folder(self, task):
@@ -389,7 +376,100 @@ class FileOperationsSubModule:
 
         return msg
 
-    def execute(self, task):
-        action = self.actions.get(task.action)
-        if action:
-            return action(task)
+    def rename_folder_direct(self, task):
+        old_foldername = task.parameters.old_foldername
+        new_foldername = task.parameters.new_foldername
+
+        location_list = self.filter_location_list(locations.locations, old_foldername)
+        if not location_list:
+            return f"Folder '{old_foldername}' is not registered in Friday memory."
+
+        folder_path = Path(location_list[0]["location"])
+        if not folder_path.is_dir():
+            return f"Folder '{old_foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
+
+        new_folder_path = folder_path.with_name(new_foldername)
+        if new_folder_path.is_dir():
+            return f"Folder {new_foldername} already exists."
+
+        folder_path.rename(new_folder_path)
+        msg = f"Folder '{old_foldername}' renamed to '{new_foldername}' successfully."
+
+        res = rename_direct(old_foldername, new_foldername, str(new_folder_path))
+        if res["state"] and res["exist"]:
+            msg += " Foldername updated successfully in Friday memory."
+        elif not res["state"]:
+            msg += " Foldername cannot be updated, as some error occurred."
+
+        with get_conn_obj() as conn:
+            locations.locations = fetch_locations(conn)
+
+        return msg
+
+    def delete_folder_direct(self, task):
+        foldername = task.parameters.folder_to_be_deleted_name
+
+        location_list = self.filter_location_list(locations.locations, foldername)
+        if not location_list:
+            return f"Folder '{foldername}' is not registered in Friday memory."
+
+        folder_path = Path(location_list[0]["location"])
+        if not folder_path.is_dir():
+            return f"Folder '{foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
+
+        msg = f"Folder {foldername} sent to trash successfully."
+        send2trash(folder_path)
+
+        res = delete_direct(foldername)
+        if res["state"]:
+            msg += " Folder Path deleted successfully from Friday memory."
+        else:
+            msg += " Folder Path cannot be updated, as some error occurred."
+        with get_conn_obj() as conn:
+            locations.locations = fetch_locations(conn)
+
+        return msg
+
+    def move_folder_direct(self, task):
+        folder_to_be_moved = task.parameters.folder_to_be_moved
+        destination_folder = task.parameters.destination_folder
+
+        location_list = self.filter_location_list(locations.locations, folder_to_be_moved)
+        if not location_list:
+            return (
+                f"Folder '{folder_to_be_moved}' is not registered in Friday memory."
+            )
+        folder_path = Path(location_list[0]['location'])
+
+        location_list = self.filter_location_list(locations.locations, destination_folder)
+        if not location_list:
+            return (
+                f"Folder '{destination_folder}' is not registered in Friday memory."
+            )
+        destination_folder_path = Path(location_list[0]['location'])
+
+        if not folder_path.is_dir():
+            return f"Folder '{folder_to_be_moved}' is registered, but the physical path '{folder_path}' does not exist on this machine."
+
+        if not destination_folder_path.is_dir():
+            return f"Folder '{destination_folder}' is registered, but the physical path '{destination_folder_path}' does not exist on this machine."
+
+        try:
+            shutil.move(folder_path, destination_folder_path)
+            msg = f"Folder {folder_to_be_moved} moved successfully."
+            os.startfile(destination_folder_path)
+
+            new_path = destination_folder_path / folder_to_be_moved
+            res = upsert_direct(folder_to_be_moved, str(new_path))
+            
+            if res["state"] and res["exist"]:
+                msg += " Folder Path updated successfully in Friday memory."
+            elif not res["state"]:
+                msg += " Folder Path cannot be updated, as some error occurred."
+
+            with get_conn_obj() as conn:
+                locations.locations = fetch_locations(conn)
+
+            return msg
+        except Exception as err:
+            return f'Some Error occurred. Error: {err}'

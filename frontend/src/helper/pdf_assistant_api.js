@@ -46,7 +46,7 @@ export function getData() {
   .then(async res => {
     let data = await res.json()
     if(!res.ok) {
-      throw new Error('Failed to Fetch.')
+      throw new Error(' Failed to Fetch.')
     }
     return data
   })

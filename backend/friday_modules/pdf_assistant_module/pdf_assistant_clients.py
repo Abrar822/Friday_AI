@@ -17,7 +17,7 @@ def load_model(chroma_db_client, collection, model):
 
 
 def to_llm(augmented_prompt: str):
-    system_prompt = """Answer the user's question using only the provided PDF context. Do not hallucinate or use outside knowledge. If the context is insufficient, say about it."""
+    system_prompt = """Answer the user's question using only the provided PDF context. Do not hallucinate or use outside knowledge. If the context is insufficient, say about it. If user asks in detail then provide detailing."""
     response = requests.post(
         "http://127.0.0.1:8080/chat/completions",
         json={

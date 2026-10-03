@@ -8,6 +8,9 @@ from backend.friday_modules.desktop_module.screenshot_sub_module import (
 from .app_registry import registry
 
 import screen_brightness_control as sbc
+import pyautogui
+import pyperclip
+import time
 from pycaw.pycaw import AudioUtilities
 import pythoncom
 import subprocess
@@ -24,27 +27,31 @@ class DesktopModule:
         self.actions = {
             "set_volume": self.set_volume,
             "set_brightness": self.set_brightness,
-            "perform_shutdown": self.power.execute,
-            "perform_restart": self.power.execute,
-            "perform_locking": self.power.execute,
-            "perform_sleep": self.power.execute,
-            "perform_hibernation": self.power.execute,
-            "take_screenshot": self.screenshot.execute,
-            "create_file": self.file.execute,
-            "create_folder": self.file.execute,
-            "open_file": self.file.execute,
-            "open_folder": self.file.execute,
-            "delete_file": self.file.execute,
-            "delete_folder": self.file.execute,
-            "rename_file": self.file.execute,
-            "rename_folder": self.file.execute,
-            "close_file": self.file.execute,
-            "move_folder": self.file.execute,
-            "move_file": self.file.execute,
-            "search_file": self.file.execute,
-            "search_folder": self.file.execute,
+            "perform_shutdown": self.power.perform_shutdown,
+            "perform_restart": self.power.perform_restart,
+            "perform_locking": self.power.perform_locking,
+            "perform_sleep": self.power.perform_sleep,
+            "perform_hibernation": self.power.perform_hibernation,
+            "take_screenshot": self.screenshot.take_screenshot,
+            "create_file": self.file.create_file,
+            "create_folder": self.file.create_folder,
+            "open_file": self.file.open_file,
+            "open_folder": self.file.open_folder,
+            "delete_file": self.file.delete_file,
+            "delete_folder": self.file.delete_folder,
+            "rename_file": self.file.rename_file,
+            "rename_folder": self.file.rename_folder,
+            "close_file": self.file.close_file,
+            "move_folder": self.file.move_folder,
+            "move_file": self.file.move_file,
+            "search_file": self.file.search_file,
+            "search_folder": self.file.search_folder,
             "open_local_app": self.open_local_app,
             "conversation": self.conversation,
+            "paste": self.paste,
+            "rename_folder_direct": self.file.rename_folder_direct,
+            "delete_folder_direct": self.file.delete_folder_direct,
+            "move_folder_direct": self.file.move_folder_direct
         }
 
     def normalise(self, s: str):
@@ -99,6 +106,15 @@ class DesktopModule:
         level = max(0, min(level, 100))
 
         sbc.set_brightness(level)
+
+    def paste(self, task):
+        try:
+            content = task.parameters.content
+            pyperclip.copy(content)
+            pyautogui.hotkey("ctrl", "v")
+            return "Pasted successfully."
+        except:
+            return "Failed to paste the content."
 
     def execute(self, task):
         action = self.actions.get(task.action)

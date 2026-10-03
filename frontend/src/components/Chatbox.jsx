@@ -19,7 +19,7 @@ export default function Chatbox({
   prompt,
   setPrompt,
   sendBtnRef,
-  recordBtnRef
+  recordBtnRef,
 }) {
   const draggerRef = useRef(null);
   const modeBox = useRef(null);
@@ -357,7 +357,13 @@ export default function Chatbox({
                 rows={1}
                 onKeyDown={async (e) => {
                   if (e.key == "Enter" && !e.shiftKey) {
-                    if (prompt.trim().length <= 0 || loading || !/[a-zA-Z]/.test(prompt.trim())) return;
+                    if (!/[a-zA-Z]/.test(prompt.trim())) {
+                      setPrompt("");
+                      return;
+                    }
+                    if (prompt.trim().length <= 0 || loading) {
+                      return;
+                    }
                     e.preventDefault();
                     setMessages((prev) => [
                       ...prev,
@@ -410,7 +416,7 @@ export default function Chatbox({
                           type: "bot-message",
                           message:
                             "Sorry I could not process the request." +
-                            str(err.message),
+                            String(err.message),
                         },
                       ]);
                     } finally {
@@ -439,7 +445,13 @@ export default function Chatbox({
                 className="send-btn"
                 title="Send Prompt"
                 onClick={async () => {
-                  if (prompt.trim().length <= 0 || loading || !/[a-zA-Z]/.test(prompt.trim())) return;
+                  if (!/[a-zA-Z]/.test(prompt.trim())) {
+                    setPrompt("");
+                    return;
+                  }
+                  if (prompt.trim().length <= 0 || loading) {
+                    return;
+                  }
                   setMessages((prev) => [
                     ...prev,
                     { type: "user-message", message: prompt.trim() },
@@ -491,7 +503,7 @@ export default function Chatbox({
                         type: "bot-message",
                         message:
                           "Sorry I could not process the request." +
-                          str(err.message),
+                          String(err.message),
                       },
                     ]);
                   } finally {
