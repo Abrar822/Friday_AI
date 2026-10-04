@@ -5,12 +5,14 @@ from typing import Literal, Annotated
 class NoParams(BaseModel):
     pass
 
+class ConversationParams(BaseModel):
+    conversation_response: str
 
 class Conversation(BaseModel):
     id: int
     module: Literal["desktop"]
     action: Literal["conversation"]
-    parameters: NoParams
+    parameters: ConversationParams
 
 
 class SetVolumeParams(BaseModel):

@@ -85,11 +85,11 @@ class DesktopModule:
         return f"'{app_name}' not installed on the machine."
 
     def conversation(self, task):
-        pass
+        return f'{task.parameters.conversation_response.strip()}'
 
     def set_volume(self, task):
         pythoncom.CoInitialize()
-        level = task.parameters.level
+        level = int(task.parameters.level)
         if level < 0:
             level = 10
         elif level > 100:
@@ -102,7 +102,7 @@ class DesktopModule:
         pythoncom.CoUninitialize()
 
     def set_brightness(self, task):
-        level = task.parameters.level
+        level = int(task.parameters.level)
         level = max(0, min(level, 100))
 
         sbc.set_brightness(level)

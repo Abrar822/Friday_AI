@@ -3,7 +3,7 @@
 # new: .\backend\core\llama_cpp\llama-server.exe -m ".\backend\core\model\Qwen3-1.7B-Q4_K_M.gguf" -c 4096
 
 # data = {
-#     "response": "Email is being generated, pls dont press any key sir",
+#     "acknowledgement_response": "Email is being generated, pls dont press any key sir",
 #     "tasks": [
 #         {
 #             "id": 1,
@@ -37,6 +37,8 @@ async def lifespan(app: FastAPI):
     db()
     settingDb()
     name = get_name()
+
+    app.state.llm_mode = 'qwen'
 
     conn = get_conn_obj()
     locations.locations = fetch_locations(conn)

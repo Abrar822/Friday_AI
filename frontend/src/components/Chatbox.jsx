@@ -379,7 +379,7 @@ export default function Chatbox({
                         response = await fastapiConnect(prompt);
                         // To update in memory ui table after folder state update
                         response.response.forEach((msg) => {
-                          if (msg.includes("folder")) {
+                          if (msg.includes("folder") || msg.includes("Folder")) {
                             setTableUpdate(true);
                           }
                         });

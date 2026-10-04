@@ -1,6 +1,7 @@
-from fastapi import APIRouter, UploadFile, Form, File
+from fastapi import APIRouter, UploadFile, Form, File, Request
+from sentence_transformers import SentenceTransformer
 import pymupdf
-from .pdf_assistant_clients import load_model, to_llm
+from .pdf_assistant_clients import to_llm, to_llm_by_groq
 from ...pydantic_models.pdf_assistant_models import PdfAssistant
 import chromadb
 from pathlib import Path
@@ -10,6 +11,17 @@ model = None
 collection = None
 chroma_db_client = None
 
+def load_model():
+    global model, collection, chroma_db_client
+    path = Path.home() / "Friday_AI" / "chromadb.db"
+    chroma_db_client = chromadb.PersistentClient(path=str(path))
+    collection = chroma_db_client.get_or_create_collection(
+        name="Friday_documents_collection"
+    )
+    model = SentenceTransformer(
+        str(Path("backend/friday_modules/pdf_assistant_module/model/all-MiniLM-L6-v2"))
+    )
+
 
 @pdf_upload_endpoints.post("/pdf/upload")
 async def pdf_upload(
@@ -17,10 +29,7 @@ async def pdf_upload(
 ):
     global model, collection, chroma_db_client
     if not model and not collection and not chroma_db_client:
-        print('model created in upload')
-        model, collection, chroma_db_client = load_model(
-            chroma_db_client, collection, model
-        )
+        load_model()
     filenames = [
         {"filename": f.filename, "doc_id": id} for f, id in zip(files, doc_ids)
     ]
@@ -68,9 +77,8 @@ async def pdf_upload(
 @pdf_upload_endpoints.delete("/pdf/delete")
 def delete_files():
     global model, collection, chroma_db_client
-
-    path = Path.home() / "Friday_AI" / "chromadb.db"
-    chroma_db_client = chromadb.PersistentClient(path=str(path))
+    if not model and not collection and not chroma_db_client:
+        load_model()
     chroma_db_client.delete_collection(name="Friday_documents_collection")
 
     model = None
@@ -81,8 +89,10 @@ def delete_files():
 
 
 @pdf_upload_endpoints.post("/pdf/query")
-def query(pdf_assist: PdfAssistant):
-    global model, collection
+def query(pdf_assist: PdfAssistant, req: Request):
+    global model, collection, chroma_db_client
+    if not model and not collection and not chroma_db_client:
+        load_model()
     query = pdf_assist.query
     embedded_query = model.encode(query.lower()).tolist()
 
@@ -96,7 +106,10 @@ def query(pdf_assist: PdfAssistant):
     {query}
     Answer the user's question using only the PDF CONTEXT.
     """
-    result = to_llm(augmented_prompt)
+    if req.app.state.llm_mode == 'qwen':
+        result = to_llm(augmented_prompt)
+    elif req.app.state.llm_mode == 'groq':
+        result = to_llm_by_groq(augmented_prompt)
 
     return result
 
@@ -113,10 +126,7 @@ def get_data():
                 filenames.add(tupl['filename'])
         return new_data
     if not model and not collection and not chroma_db_client:
-        print('model created in get')
-        model, collection, chroma_db_client = load_model(
-            chroma_db_client, collection, model
-        )
+        load_model()
     data = collection.get(include=["metadatas"])
     data = [{"filename": d['filename'], "doc_id": d['doc_id']} for d in data['metadatas']]
     data = removeDuplicates(data)

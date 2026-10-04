@@ -1,6 +1,6 @@
 import requests
 import json
-from .system_prompt import system_prompt
+from .system_prompt import system_prompt, groq_system_prompt
 
 FRIDAY_GRAMMAR = r"""
 # Allow structural spaces anywhere between tokens safely
@@ -24,6 +24,38 @@ integer ::= [0-9]+
 ws ::= [ \t\n\r]*
 """
 
+from dotenv import load_dotenv
+from groq import Groq
+import os
+load_dotenv('backend/.env')
+client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+
+def route_task_by_groq(prompt: str):
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=[
+            {
+                "role": "system",
+                "content": groq_system_prompt
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+
+        temperature=0.2,
+        max_tokens=2048,
+
+        response_format={
+            "type": "json_object"
+        }
+    )
+    data = json.loads(
+        response.choices[0].message.content
+    )
+    print(data)
+    return data
 
 def route_task(prompt: str):
     response = requests.post(
