@@ -1,7 +1,7 @@
 import requests
-import os
+# import os
 from groq import Groq
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 def to_llm(augmented_prompt: str):
@@ -29,9 +29,9 @@ def to_llm(augmented_prompt: str):
     data = res["choices"][0]["message"]["content"]
     return data
 
-load_dotenv("backend/.env")
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-def to_llm_by_groq(augmented_prompt: str):
+# load_dotenv("backend/.env")
+# client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def to_llm_by_groq(augmented_prompt: str, key: str):
     system_prompt = """
     Answer ONLY from the provided PDF context.
     Do not use outside knowledge or hallucinate.
@@ -39,7 +39,7 @@ def to_llm_by_groq(augmented_prompt: str):
     Use only plain paragraphs or numbered points.
     Never use tables, headings, bullets, markdown, or other structured formats.
     """
-
+    client = Groq(api_key=key)
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[

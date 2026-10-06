@@ -3,7 +3,7 @@
 # new: .\backend\core\llama_cpp\llama-server.exe -m ".\backend\core\model\Qwen3-1.7B-Q4_K_M.gguf" -c 4096
 
 # data = {
-#     "acknowledgement_response": "Email is being generated, pls dont press any key sir",
+#     "acknowledgement_before_task": "Email is being generated, pls dont press any key sir",
 #     "tasks": [
 #         {
 #             "id": 1,
@@ -25,30 +25,32 @@ from .friday_modules.text_to_speech_module.Piper_TTS import tts
 from .friday_modules.persistent_memory.memory_operations import fetch_locations
 from .friday_modules.desktop_module.app_registry.create_registry import create_registry
 from .friday_modules.desktop_module.app_registry import registry
-from .friday_modules.persistent_memory import locations
+from .friday_modules.persistent_memory import storage_declarations
 from .friday_modules.persistent_memory.setting_endpoints import setting_endpoints
-from .friday_modules.persistent_memory.general_db_operations import get_name
 from .friday_modules.pdf_assistant_module.pdf_ass_endpoints import pdf_upload_endpoints
 from .friday_modules.speech_to_text_module.stt_endpoints import stt_endpoints
+from .friday_modules.persistent_memory.general_db_operations import fetch_settings_details
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db()
     settingDb()
-    name = get_name()
 
-    app.state.llm_mode = 'qwen'
+    settings_details = fetch_settings_details()
+    storage_declarations.settings_details['llm_mode'] = settings_details['llm_mode']
+    storage_declarations.settings_details['api_key'] = settings_details['api_key']
+    storage_declarations.settings_details['name'] = settings_details['name']
 
     conn = get_conn_obj()
-    locations.locations = fetch_locations(conn)
+    storage_declarations.locations = fetch_locations(conn)
     conn.close()
 
     registry.registry = create_registry()
 
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
-    # app.state.speaker.tts(f'Hi {name}, Friday here. How can I help you')
+    # app.state.speaker.tts(f'Hi {app.state.name}, Friday here. How can I help you')
     yield
 
 

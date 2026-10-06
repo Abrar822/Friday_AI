@@ -5,8 +5,10 @@ from typing import Literal, Annotated
 class NoParams(BaseModel):
     pass
 
+
 class ConversationParams(BaseModel):
     conversation_response: str
+
 
 class Conversation(BaseModel):
     id: int
@@ -296,6 +298,31 @@ class MoveFolderDirect(BaseModel):
     parameters: MoveFolderDirectParams
 
 
+class OpenSelectedUrl(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["open_selected_url"]
+    parameters: NoParams
+
+
+class OpenSelectedPath(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["open_selected_path"]
+    parameters: NoParams
+
+
+class AnalyseSelectedContentParams(BaseModel):
+    query_type: Literal["explain", "rewrite", "verify"]
+
+
+class AnalyseSelectedContent(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["analyse_selected_content"]
+    parameters: AnalyseSelectedContentParams
+
+
 DeskTopTask = Annotated[
     SetVolume
     | SetBrightness
@@ -323,6 +350,9 @@ DeskTopTask = Annotated[
     | Paste
     | RenameFolderDirect
     | DeleteFolderDirect
-    | MoveFolderDirect,
+    | MoveFolderDirect
+    | OpenSelectedPath
+    | OpenSelectedUrl
+    | AnalyseSelectedContent,
     Field(discriminator="action"),
 ]

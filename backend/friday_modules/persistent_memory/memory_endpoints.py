@@ -6,7 +6,7 @@ from ...pydantic_models.persistent_memory_module.persistent_memory_models import
 )
 from pathlib import Path
 from .db import get_connection
-from . import locations
+from . import storage_declarations
 from .memory_operations import fetch_locations
 
 memory_endpoints = APIRouter()
@@ -51,7 +51,7 @@ def insert_data(folder_arr: FolderPaths, conn=Depends(get_connection)):
             query, [(row["f_name"], row["location"]) for row in folder_details]
         )
         conn.commit()
-        locations.locations = fetch_locations(conn)
+        storage_declarations.locations = fetch_locations(conn)
         return {"message": "Successfully inserted/updated locations"}
     except Exception as err:
         raise HTTPException(
@@ -87,7 +87,7 @@ def delete(delete_f_name: list[DeleteData], conn=Depends(get_connection)):
         cur.executemany(query, [(dic.f_name.lower(),) for dic in delete_f_name])
         if cur.rowcount:
             conn.commit()
-            locations.locations = fetch_locations(conn)
+            storage_declarations.locations = fetch_locations(conn)
             return {"message": "Deleted locations successfully."}
         return {"message": "No folders found."}
     except Exception as err:

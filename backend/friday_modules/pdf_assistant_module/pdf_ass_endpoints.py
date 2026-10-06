@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, Form, File, Request
+from fastapi import APIRouter, UploadFile, Form, File, status
 from sentence_transformers import SentenceTransformer
 import pymupdf
 from .pdf_assistant_clients import to_llm, to_llm_by_groq
 from ...pydantic_models.pdf_assistant_models import PdfAssistant
 import chromadb
 from pathlib import Path
+from ..persistent_memory import storage_declarations
 
 pdf_upload_endpoints = APIRouter()
 model = None
@@ -23,7 +24,7 @@ def load_model():
     )
 
 
-@pdf_upload_endpoints.post("/pdf/upload")
+@pdf_upload_endpoints.post("/pdf/upload", status_code=status.HTTP_201_CREATED)
 async def pdf_upload(
     files: list[UploadFile] = File(...), doc_ids: list[str] = Form(...)
 ):
@@ -74,7 +75,7 @@ async def pdf_upload(
     return filenames
 
 
-@pdf_upload_endpoints.delete("/pdf/delete")
+@pdf_upload_endpoints.delete("/pdf/delete", status_code=status.HTTP_200_OK)
 def delete_files():
     global model, collection, chroma_db_client
     if not model and not collection and not chroma_db_client:
@@ -88,8 +89,8 @@ def delete_files():
     return {"message": "Files removed successfully."}
 
 
-@pdf_upload_endpoints.post("/pdf/query")
-def query(pdf_assist: PdfAssistant, req: Request):
+@pdf_upload_endpoints.post("/pdf/query", status_code=status.HTTP_200_OK)
+def query(pdf_assist: PdfAssistant):
     global model, collection, chroma_db_client
     if not model and not collection and not chroma_db_client:
         load_model()
@@ -106,15 +107,19 @@ def query(pdf_assist: PdfAssistant, req: Request):
     {query}
     Answer the user's question using only the PDF CONTEXT.
     """
-    if req.app.state.llm_mode == 'qwen':
+    llm_mode = storage_declarations.settings_details['llm_mode']
+    api_key = storage_declarations.settings_details['api_key']
+
+    print('Pdf : ', llm_mode)
+    if llm_mode == 'qwen':
         result = to_llm(augmented_prompt)
-    elif req.app.state.llm_mode == 'groq':
-        result = to_llm_by_groq(augmented_prompt)
+    elif llm_mode == 'groq':
+        result = to_llm_by_groq(augmented_prompt, api_key)
 
     return result
 
 
-@pdf_upload_endpoints.get("/pdf/get")
+@pdf_upload_endpoints.get("/pdf/get", status_code=status.HTTP_200_OK)
 def get_data():
     global model, collection, chroma_db_client
     def removeDuplicates(data):

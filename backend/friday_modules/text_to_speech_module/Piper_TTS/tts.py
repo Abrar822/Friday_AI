@@ -1,11 +1,13 @@
 import subprocess
 import sounddevice as sd
 import soundfile as sf
+from ....helpers.clean_text import clean_text
 
 
 class TextToSpeechModule:
 
     def tts(self, text: str):
+        text = clean_text(text)
         PIPER_EXE = (
             r"backend\friday_modules\text_to_speech_module\Piper_TTS\piper\piper.exe"
         )

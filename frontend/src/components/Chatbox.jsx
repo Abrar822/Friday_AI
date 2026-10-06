@@ -415,7 +415,7 @@ export default function Chatbox({
                         {
                           type: "bot-message",
                           message:
-                            "Sorry I could not process the request." +
+                            "Sorry I could not process the request. " +
                             String(err.message),
                         },
                       ]);
@@ -502,7 +502,7 @@ export default function Chatbox({
                       {
                         type: "bot-message",
                         message:
-                          "Sorry I could not process the request." +
+                          "Sorry I could not process the request. " +
                           String(err.message),
                       },
                     ]);

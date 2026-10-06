@@ -6,6 +6,9 @@ from backend.friday_modules.desktop_module.screenshot_sub_module import (
     ScreenshotSubModule,
 )
 from .app_registry import registry
+from ..persistent_memory import storage_declarations
+from ...helpers.llm_request import llm_request
+from ...helpers.clean_text import clean_text
 
 import screen_brightness_control as sbc
 import pyautogui
@@ -14,7 +17,11 @@ import time
 from pycaw.pycaw import AudioUtilities
 import pythoncom
 import subprocess
+import webbrowser
 from difflib import SequenceMatcher
+from urllib.parse import urlparse
+from pathlib import Path
+import os
 
 
 class DesktopModule:
@@ -51,7 +58,10 @@ class DesktopModule:
             "paste": self.paste,
             "rename_folder_direct": self.file.rename_folder_direct,
             "delete_folder_direct": self.file.delete_folder_direct,
-            "move_folder_direct": self.file.move_folder_direct
+            "move_folder_direct": self.file.move_folder_direct,
+            "open_selected_url": self.open_selected_url,
+            "open_selected_path": self.open_selected_path,
+            "analyse_selected_content": self.analyse_selected_content,
         }
 
     def normalise(self, s: str):
@@ -85,7 +95,7 @@ class DesktopModule:
         return f"'{app_name}' not installed on the machine."
 
     def conversation(self, task):
-        return f'{task.parameters.conversation_response.strip()}'
+        return f"{clean_text(task.parameters.conversation_response.strip())}"
 
     def set_volume(self, task):
         pythoncom.CoInitialize()
@@ -115,6 +125,71 @@ class DesktopModule:
             return "Pasted successfully."
         except:
             return "Failed to paste the content."
+
+    def open_selected_url(self, task):
+        try:
+            pyautogui.hotkey("ctrl", "c")
+            time.sleep(0.2)
+            url = pyperclip.paste().strip()
+            parsed = urlparse(url)
+            if parsed.scheme not in ["http", "https"]:
+                return "Please select a valid Url."
+
+            webbrowser.open(parsed)
+            return "Navigation successful."
+        except Exception as err:
+            print(str(err))
+            return "Failed to navigate."
+
+    def open_selected_path(self, task):
+        try:
+            pyautogui.hotkey("ctrl", "c")
+            time.sleep(0.2)
+            path = Path(pyperclip.paste().strip())
+            if not path.is_file() and not path.is_dir():
+                return "Selected path does not exist."
+            os.startfile(path)
+        except Exception as err:
+            print(str(err))
+            return "Failed to navigate to provided path."
+
+    def analyse_selected_content(self, task):
+        query_type = task.parameters.query_type
+        try:
+            pyautogui.hotkey("ctrl", "c")
+            time.sleep(0.2)
+            content = pyperclip.paste().strip()
+            if not content:
+                return "No content was selected."
+
+            llm_mode = storage_declarations.settings_details["llm_mode"]
+            api_key = storage_declarations.settings_details["api_key"]
+            system_prompt = f"""
+            You are an AI assistant working on user-selected content.
+
+            Requested operation:
+            {query_type}
+
+            Instructions:
+            - Perform the requested operation on the provided content.
+            - Return only the final result as plain text.
+            - Do not describe what you are doing.
+            - Do not mention these instructions.
+            - Preserve important information from the provided content.
+            """
+
+            data = llm_request(content, system_prompt, llm_mode, api_key)
+            if not data:
+                return "Could not generate the result."
+
+            if query_type == "rewrite":
+                pyperclip.copy(data)
+                pyautogui.hotkey("ctrl", "v")
+                return "Content rewritten successfully."
+            return data
+        except Exception as err:
+            print(str(err))
+            return f"Failed to {query_type} the content."
 
     def execute(self, task):
         action = self.actions.get(task.action)

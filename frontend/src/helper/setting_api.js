@@ -6,12 +6,15 @@ export function settingConnect(data) {
     },
     body: JSON.stringify({
       name: data.name,
+      api_key: data.api_key,
+      llm_mode: data.llm_mode
     }),
   }).then(async (res) => {
     let response = await res.json();
     if (!res.ok) {
       throw new Error(response.detail);
     }
+    console.log('response: ', response)
     return response;
   });
 }
@@ -22,6 +25,7 @@ export function fetchSetting() {
     if (!res.ok) {
       throw new Error(data.detail);
     }
+    console.log('fetched: ', data)
     return data;
   });
 }

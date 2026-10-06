@@ -27,6 +27,14 @@ def settingDb():
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     cur.execute(query)
+
+    query = """INSERT INTO keyval (key, value) VALUES (?, ?)
+            ON CONFLICT (key)
+            DO NOTHING
+    """
+    data = [('name', ''), ('api_key', ''), ('llm_model', '')]
+    cur.executemany(query, data)
+    
     conn.commit()
     conn.close()
 

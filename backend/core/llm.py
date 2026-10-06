@@ -4,14 +4,14 @@ from .system_prompt import system_prompt, groq_system_prompt
 
 FRIDAY_GRAMMAR = r"""
 # Allow structural spaces anywhere between tokens safely
-root ::= ws "{" ws "\"acknowledgement_response\"" ws ":" ws string ws "," ws "\"tasks\"" ws ":" ws task-list ws "}" ws
+root ::= ws "{" ws "\"acknowledgement_before_task\"" ws ":" ws string ws "," ws "\"tasks\"" ws ":" ws task-list ws "}" ws
 task-list ::= "[" ws (task (ws "," ws task)*)? ws "]"
 
 task ::= "{" ws "\"id\"" ws ":" ws integer ws "," ws "\"module\"" ws ":" ws module-types ws "," ws "\"action\"" ws ":" ws action-types ws "," ws "\"parameters\"" ws ":" ws parameters-object ws "}"
 
 module-types ::= "\"email\"" | "\"browser\"" | "\"desktop\""
 
-action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\"" | "\"paste\"" | "\"delete_folder_direct\"" | "\"move_folder_direct\"" | "\"rename_folder_direct\""
+action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\"" | "\"paste\"" | "\"delete_folder_direct\"" | "\"move_folder_direct\"" | "\"rename_folder_direct\"" | "\"open_selected_url\"" | "\"open_selected_path\"" | "\"analyse_selected_content\""
 
 # Flexible object for parameters
 parameters-object ::= "{" ws (string ws ":" ws value (ws "," ws string ws ":" ws value)*)? ws "}"
@@ -24,13 +24,14 @@ integer ::= [0-9]+
 ws ::= [ \t\n\r]*
 """
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from groq import Groq
-import os
-load_dotenv('backend/.env')
-client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+# import os
+# load_dotenv('backend/.env')
+# client = Groq(api_key=os.getenv('GROQ_API_KEY'))
 
-def route_task_by_groq(prompt: str):
+def route_task_by_groq(prompt: str, key: str):
+    client = Groq(api_key=key)
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[

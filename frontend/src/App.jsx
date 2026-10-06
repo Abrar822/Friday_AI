@@ -24,6 +24,8 @@ function App() {
   const [pickedFolder, setPickFolder] = useState([]);
   const [setting, setSetting] = useState({
     name: "",
+    api_key: "",
+    llm_mode: "qwen",
   });
   const [tableUpdate, setTableUpdate] = useState(false);
 
@@ -49,7 +51,7 @@ function App() {
   //   return () => {
   //     window.removeEventListener("keydown", handle);
   //   };
-  // }, []);
+  // }, []); // For active app working
 
   let mediaRecorder = useRef(null);
   let audioChunks = useRef(null);
@@ -122,7 +124,11 @@ function App() {
     const execute = async () => {
       try {
         let data = await fetchSetting();
-        setSetting({ name: data.name });
+        setSetting({
+          name: data.name || "",
+          api_key: data.api_key || "",
+          llm_mode: data.llm_mode || "",
+        });
       } catch (err) {
         setAlert({ msg: "Error Fetching the Settings details.", state: true });
       }
