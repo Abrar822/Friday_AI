@@ -78,9 +78,20 @@
   width: 100%;
 }
 
+th, td {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  /* text-align: left !important; */
+}
+
 th {
   font-size: 18px;
   border-bottom: 1px solid var(--dark-border);
+}
+
+.memory-table th:nth-child(3) {
+  width: 600px;
 }
 
 th:nth-child(1),
@@ -106,11 +117,11 @@ th:nth-child(2) {
 th,
 td {
   padding: 8px 10px;
-  text-align: center;
+  text-align: left;
 }
 
 td:nth-child(1) {
-  text-align: center;
+  text-align: left;
 }
 
 td {

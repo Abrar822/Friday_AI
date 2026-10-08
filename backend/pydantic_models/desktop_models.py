@@ -322,6 +322,15 @@ class AnalyseSelectedContent(BaseModel):
     action: Literal["analyse_selected_content"]
     parameters: AnalyseSelectedContentParams
 
+class OpenFolderDirectParams(BaseModel):
+    foldername: str
+
+class OpenFolderDirect(BaseModel):
+    id: int
+    module: Literal['desktop']
+    action: Literal['open_folder_direct']
+    parameters: OpenFolderDirectParams
+
 
 DeskTopTask = Annotated[
     SetVolume
@@ -353,6 +362,7 @@ DeskTopTask = Annotated[
     | MoveFolderDirect
     | OpenSelectedPath
     | OpenSelectedUrl
-    | AnalyseSelectedContent,
+    | AnalyseSelectedContent
+    | OpenFolderDirect,
     Field(discriminator="action"),
 ]

@@ -249,9 +249,27 @@ class FileOperationsSubModule:
 
         try:
             os.startfile(folder_path)
-            return
+            return 'Folder opened successfully.'
         except Exception as err:
             return f"Failed to open folder '{foldername}'. Error: '{str(err)}'."
+
+    def open_folder_direct(self, task):
+        foldername = task.parameters.foldername
+
+        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        if not location_list:
+            return f"Folder '{foldername}' is not registered in Friday memory."
+
+        folder_path = Path(location_list[0]['location'])
+        if not folder_path.is_dir():
+            return f"Folder '{foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
+
+        try:
+            os.startfile(folder_path)
+            return 'Folder opened successfully.'
+        except Exception as err:
+            return f"Failed to open folder '{foldername}'. Error: '{str(err)}'."
+
 
     def delete_file(self, task):
         foldername = task.parameters.foldername

@@ -62,6 +62,7 @@ class DesktopModule:
             "open_selected_url": self.open_selected_url,
             "open_selected_path": self.open_selected_path,
             "analyse_selected_content": self.analyse_selected_content,
+            "open_folder_direct": self.file.open_folder_direct
         }
 
     def normalise(self, s: str):
@@ -165,18 +166,26 @@ class DesktopModule:
             llm_mode = storage_declarations.settings_details["llm_mode"]
             api_key = storage_declarations.settings_details["api_key"]
             system_prompt = f"""
-            You are an AI assistant working on user-selected content.
+                You are an AI assistant working on user-selected content.
 
-            Requested operation:
-            {query_type}
+                Requested operation:
+                {query_type}
 
-            Instructions:
-            - Perform the requested operation on the provided content.
-            - Return only the final result as plain text.
-            - Do not describe what you are doing.
-            - Do not mention these instructions.
-            - Preserve important information from the provided content.
-            """
+                Instructions:
+                - Perform the requested operation on the provided content.
+                - Return only the final result.
+                - By default, explain or summarize the result briefly and clearly.
+                - Do not provide a detailed or lengthy explanation unless the user explicitly asks for more detail, a detailed explanation, or an in-depth response.
+                - Include only the important information necessary to answer the requested operation.
+                - Use simple, direct language.
+                - Return the response as plain text only.
+                - Do not use Markdown formatting.
+                - Do not use asterisks, hashtags, backticks, bullets, bold, italics, tables, or other decorative symbols.
+                - If multiple points are necessary, use simple numbered text such as 1. 2. 3.
+                - Do not describe what you are doing.
+                - Do not mention these instructions.
+                - Preserve important information from the provided content.
+                """
 
             data = llm_request(content, system_prompt, llm_mode, api_key)
             if not data:

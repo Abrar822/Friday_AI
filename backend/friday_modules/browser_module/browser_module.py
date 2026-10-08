@@ -1,7 +1,6 @@
 import webbrowser
 from urllib.parse import quote
 from playwright.sync_api import sync_playwright
-from .content_extractor import generate_content
 from pathlib import Path
 from datetime import datetime
 from ...helpers.llm_request import llm_request

@@ -1,20 +1,24 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Orbitron';
-  src: url('./assets/fonts/Orbitron-Bold.ttf') format('truetype');
+  font-family: "Orbitron";
+  src: url("./assets/fonts/Orbitron-Bold.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Orbitron';
-  src: url('./assets/fonts/Orbitron-Regular.ttf') format('truetype');
+  font-family: "Orbitron";
+  src: url("./assets/fonts/Orbitron-Regular.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
 
 @layer base {
-  *, code, kbd, samp, pre {
+  *,
+  code,
+  kbd,
+  samp,
+  pre {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -114,5 +118,44 @@
       opacity: 0.5;
       transform: rotate(360deg);
     }
+  }
+
+  .qwen {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 23px;
+    height: 23px;
+    border: 1px solid white;
+    background: transparent;
+  }
+  .qwen:checked::after {
+    content: "✓";
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .groq {
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 23px;
+    height: 23px;
+    border: 1px solid white;
+    background: transparent;
+  }
+  .groq:checked::after {
+    content: "✓";
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
