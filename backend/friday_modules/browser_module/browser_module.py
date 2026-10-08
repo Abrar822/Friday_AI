@@ -1,5 +1,8 @@
 import webbrowser
 from urllib.parse import quote
+import time
+import pyperclip
+import pyautogui
 from playwright.sync_api import sync_playwright
 from pathlib import Path
 from datetime import datetime
@@ -14,6 +17,7 @@ class BrowserModule:
             "open_website": self.open_website,
             "summarize_website": self.summarize_website,
             "search_specific_website": self.search_specific_website,
+            "compose_email": self.compose_email
         }
         self.search_engines = {
             "youtube": "https://www.youtube.com/results?search_query={}",
@@ -105,13 +109,30 @@ class BrowserModule:
             path.write_text(summarised_content, encoding="utf-8")
             return "The summarized content has been saved to your Downloads folder."
         except Exception as err:
-            print(str(err))
             return "Failed to summarise the webpage."
         finally:
             if browser:
                 browser.close()
             if engine:
                 engine.stop()
+
+    def compose_email(self, task):
+        try:
+            subject = task.parameters.subject
+            body = task.parameters.body
+
+            webbrowser.open("https://mail.google.com/mail/u/0/#inbox?compose=new")
+            time.sleep(15)
+
+            pyautogui.press("tab")
+            pyperclip.copy(subject)
+            pyautogui.hotkey("ctrl", "v")
+
+            pyautogui.press("tab")
+            pyperclip.copy(body)
+            pyautogui.hotkey("ctrl", "v")
+        except:
+            return "Sorry, I could not generate the email"
 
     def execute(self, task):
         action = self.actions.get(task.action)

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, HTTPException
 from ..core.llm import route_task, route_task_by_groq
 from ..pydantic_models.task_router_models import TaskRouterResponse
 from ..pydantic_models.llm_models.llm_models import LLMRequestModel
 from ..friday_modules.persistent_memory import storage_declarations
+from groq import AuthenticationError
 
 llm_prompt_router = APIRouter()
 
@@ -13,14 +14,13 @@ def generate_response(request: LLMRequestModel, req: Request):
     data = None
     result = None
     try:
-        llm_mode = storage_declarations.settings_details['llm_mode']
-        api_key = storage_declarations.settings_details['api_key']
+        llm_mode = storage_declarations.settings_details["llm_mode"]
+        api_key = storage_declarations.settings_details["api_key"]
         if llm_mode == "groq":
             data = route_task_by_groq(request.prompt, api_key)
         elif llm_mode == "qwen":
             data = route_task(request.prompt)
 
-        print('Taskrouter: ', llm_mode)
         data = TaskRouterResponse.model_validate(data)
 
         if len(data.acknowledgement_before_task.strip()) > 0:
@@ -38,14 +38,13 @@ def generate_response(request: LLMRequestModel, req: Request):
 
         return {"response": result}
 
+    except AuthenticationError:
+        req.app.state.speaker.tts("Invalid Groq Api Key.")
+        return {"response": ["Invalid Groq Api Key."]}
+    
     except Exception as err:
-        print("Response returned by llm: ", repr(data))
-        print(str(err))
         import traceback
         traceback.print_exc()
 
         req.app.state.speaker.tts("Sorry, I couldn't process that request.")
         return {"response": ["Sorry, I couldn't process that request."]}
-    finally:
-        print("Response returned by llm: ", data)
-        print("Result: ", result)

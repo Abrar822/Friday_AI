@@ -1,40 +1,23 @@
-import os
+# import os
 from groq import Groq
+
 # from dotenv import load_dotenv
-from ..persistent_memory.db import get_conn_obj
 from fastapi import HTTPException, status
+from ...core.api_key_handling import get_api_key
 
 # load_dotenv("backend/.env")
 # client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def fetchKey():
-    conn, cur = None, None
-    try:
-        conn = get_conn_obj()
-        cur = conn.cursor()
-        query = """SELECT value FROM keyval WHERE key = ?
-        """
-        cur.execute(query, ("api_key",))
-        api_key = cur.fetchone()
-        print('inside function: ', api_key)
 
-        if api_key is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=f"Groq Api Key not found."
-            )
-        return api_key[0]
-    except HTTPException:
-        raise
+def fetchKey():
+    try:
+        api_key = get_api_key() or ""
+        return api_key
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Some error occurred.",
         )
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
 
 
 def transcribe(file):
@@ -48,5 +31,3 @@ def transcribe(file):
         temperature=0,
     )
     return transcription.text
-
-

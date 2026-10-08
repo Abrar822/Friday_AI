@@ -42,7 +42,7 @@ export default function Settings({ setting, setSetting, setAlert }) {
             value={setting.api_key}
           />
         </div>
-        <div className="name w-full flex gap-8 justify-start items-start">
+        {/* <div className="name w-full flex gap-8 justify-start items-start">
           <div className="w-[100px]">Llm Mode</div>
           <div className="flex w-[150px] gap-4 items-center justify-center w-full">
             <div className="mode-selector w-full ml-[13px] pl-[15px] border-solid border-[1px] rounded-lg p-[10px] flex gap-[10px] flex-col border-(--dark-border) bg-(--message)">
@@ -90,7 +90,7 @@ export default function Settings({ setting, setSetting, setAlert }) {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <button
           className="save self-start bg-[linear-gradient(135deg,#b06bff,#5b8bff)] rounded-lg h-[40] px-[10px] py-[5px] cursor-pointer transition-all active:scale-95 duration-250 ease-in"
           onClick={async () => {
@@ -99,7 +99,6 @@ export default function Settings({ setting, setSetting, setAlert }) {
               if (response.message) {
                 setAlert({ msg: response.message, state: true });
                 let data = await fetchSetting();
-                console.log("received: ", data);
                 setSetting({
                   name: data.name,
                   api_key: data.api_key,

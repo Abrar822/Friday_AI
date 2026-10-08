@@ -12,7 +12,6 @@ async def stt(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as err:
-        print(str(err))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Cannot perform transcription.",

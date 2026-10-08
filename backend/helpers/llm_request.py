@@ -5,7 +5,7 @@ import requests
 def llm_request(prompt: str, system_prompt: str, llm_mode: str, api_key: str):
     if llm_mode == "qwen":
         response = requests.post(
-            "http://127.0.0.1:8000/chat/completions",
+            "http://127.0.0.1:8080/chat/completions",
             json={
                 "messages": [
                     {"role": "system", "content": system_prompt},

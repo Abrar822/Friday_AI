@@ -9,9 +9,9 @@ task-list ::= "[" ws (task (ws "," ws task)*)? ws "]"
 
 task ::= "{" ws "\"id\"" ws ":" ws integer ws "," ws "\"module\"" ws ":" ws module-types ws "," ws "\"action\"" ws ":" ws action-types ws "," ws "\"parameters\"" ws ":" ws parameters-object ws "}"
 
-module-types ::= "\"email\"" | "\"browser\"" | "\"desktop\""
+module-types ::= "\"browser\"" | "\"desktop\""
 
-action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"perform_shutdown\"" | "\"perform_restart\"" | "\"perform_locking\"" | "\"perform_sleep\"" | "\"perform_hibernation\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"open_folder\"" | "\"delete_file\"" | "\"delete_folder\"" | "\"rename_file\"" | "\"rename_folder\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_folder\"" | "\"move_file\"" | "\"conversation\"" | "\"paste\"" | "\"delete_folder_direct\"" | "\"move_folder_direct\"" | "\"rename_folder_direct\"" | "\"open_selected_url\"" | "\"open_selected_path\"" | "\"analyse_selected_content\""
+action-types ::= "\"compose_email\"" | "\"search_specific_website\"" | | "\"summarize_website\"" | "\"open_website\"" | "\"set_volume\"" | "\"set_brightness\"" | "\"take_screenshot\"" | "\"create_folder\"" | "\"create_file\"" | "\"open_file\"" | "\"delete_file\"" | "\"rename_file\"" | "\"close_file\"" | "\"open_local_app\"" | "\"search_folder\"" | "\"search_file\"" | "\"move_file\"" | "\"conversation\"" | "\"paste\"" | "\"delete_folder_direct\"" | "\"open_folder_direct\"" | "\"move_folder_direct\"" | "\"rename_folder_direct\"" | "\"open_selected_url\"" | "\"open_selected_path\"" | "\"analyse_selected_content\""
 
 # Flexible object for parameters
 parameters-object ::= "{" ws (string ws ":" ws value (ws "," ws string ws ":" ws value)*)? ws "}"
@@ -26,37 +26,27 @@ ws ::= [ \t\n\r]*
 
 # from dotenv import load_dotenv
 from groq import Groq
+
 # import os
 # load_dotenv('backend/.env')
 # client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+
 
 def route_task_by_groq(prompt: str, key: str):
     client = Groq(api_key=key)
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[
-            {
-                "role": "system",
-                "content": groq_system_prompt
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
+            {"role": "system", "content": groq_system_prompt},
+            {"role": "user", "content": prompt},
         ],
-
         temperature=0.2,
         max_tokens=2048,
-
-        response_format={
-            "type": "json_object"
-        }
+        response_format={"type": "json_object"},
     )
-    data = json.loads(
-        response.choices[0].message.content
-    )
-    print(data)
+    data = json.loads(response.choices[0].message.content)
     return data
+
 
 def route_task(prompt: str):
     response = requests.post(
@@ -74,8 +64,5 @@ def route_task(prompt: str):
     )
     route = response.json()
     data = route["choices"][0]["message"]["content"]
-    if data.endswith('"'):
-        data = data[:-1]
     data = json.loads(data)
-    print(data)
     return data

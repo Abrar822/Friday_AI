@@ -48,8 +48,19 @@ class SummarizeWebsite(BaseModel):
     action: Literal["summarize_website"]
     parameters: SummarizeWebsiteParams
 
+class ComposeEmailParams(BaseModel):
+    subject: str
+    body: str
+
+
+class ComposeEmail(BaseModel):
+    id: int
+    module: Literal["browser"]
+    action: Literal["compose_email"]
+    parameters: ComposeEmailParams
+
 
 BrowserTask = Annotated[
-    OpenWebsite | SummarizeWebsite | SearchSpecificWebsite,
+    OpenWebsite | SummarizeWebsite | SearchSpecificWebsite | ComposeEmail,
     Field(discriminator="action"),
 ]

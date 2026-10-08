@@ -27,7 +27,10 @@ from .friday_modules.persistent_memory import storage_declarations
 from .friday_modules.persistent_memory.setting_endpoints import setting_endpoints
 from .friday_modules.pdf_assistant_module.pdf_ass_endpoints import pdf_upload_endpoints
 from .friday_modules.speech_to_text_module.stt_endpoints import stt_endpoints
-from .friday_modules.persistent_memory.general_db_operations import fetch_settings_details
+from .friday_modules.persistent_memory.general_db_operations import (
+    fetch_settings_details,
+)
+from .core.api_key_handling import get_api_key
 
 
 @asynccontextmanager
@@ -36,9 +39,9 @@ async def lifespan(app: FastAPI):
     settingDb()
 
     settings_details = fetch_settings_details()
-    storage_declarations.settings_details['llm_mode'] = settings_details['llm_mode']
-    storage_declarations.settings_details['api_key'] = settings_details['api_key']
-    storage_declarations.settings_details['name'] = settings_details['name']
+    storage_declarations.settings_details["llm_mode"] = settings_details["llm_mode"]
+    storage_declarations.settings_details["name"] = settings_details["name"]
+    storage_declarations.settings_details["api_key"] = get_api_key() or ""
 
     conn = get_conn_obj()
     storage_declarations.locations = fetch_locations(conn)
@@ -48,7 +51,9 @@ async def lifespan(app: FastAPI):
 
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
-    # app.state.speaker.tts(f'Hi {app.state.name}, Friday here. How can I help you')
+    app.state.speaker.tts(
+        f"Hi {storage_declarations.settings_details['name']}, Friday here. How can I help you"
+    )
     yield
 
 

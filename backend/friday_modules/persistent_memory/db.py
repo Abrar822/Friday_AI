@@ -18,6 +18,7 @@ def db():
     conn.commit()
     conn.close()
 
+
 def settingDb():
     query = """CREATE TABLE IF NOT EXISTS keyval (
         id PRIMARY KEY,
@@ -32,11 +33,12 @@ def settingDb():
             ON CONFLICT (key)
             DO NOTHING
     """
-    data = [('name', ''), ('api_key', ''), ('llm_model', '')]
+    data = [("name", ""), ("llm_mode", ""), ("api_key", "")]
     cur.executemany(query, data)
-    
+
     conn.commit()
     conn.close()
+
 
 def get_connection():
     try:

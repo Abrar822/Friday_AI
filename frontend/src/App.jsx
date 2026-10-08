@@ -25,7 +25,7 @@ function App() {
   const [setting, setSetting] = useState({
     name: "",
     api_key: "",
-    llm_mode: "qwen",
+    llm_mode: "groq",
   });
   const [tableUpdate, setTableUpdate] = useState(false);
 

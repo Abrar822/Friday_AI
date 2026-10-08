@@ -12,7 +12,6 @@ def fetch_settings_details():
         data = {d[1]:d[2] for d in data}
         return data
     except Exception as err:
-        print(str(err))
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Failed to fetch details,')
     finally:
         if cur: cur.close()

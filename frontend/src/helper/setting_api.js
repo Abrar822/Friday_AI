@@ -14,7 +14,6 @@ export function settingConnect(data) {
     if (!res.ok) {
       throw new Error(response.detail);
     }
-    console.log('response: ', response)
     return response;
   });
 }
@@ -25,7 +24,6 @@ export function fetchSetting() {
     if (!res.ok) {
       throw new Error(data.detail);
     }
-    console.log('fetched: ', data)
     return data;
   });
 }

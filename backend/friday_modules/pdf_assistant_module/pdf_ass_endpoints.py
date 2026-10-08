@@ -98,7 +98,6 @@ def query(pdf_assist: PdfAssistant):
     embedded_query = model.encode(query.lower()).tolist()
 
     results = collection.query(query_embeddings=[embedded_query], n_results=2)
-    print(results)
     context = "".join(results["documents"][0])
     augmented_prompt = f"""
     PDF CONTEXT:
@@ -110,7 +109,6 @@ def query(pdf_assist: PdfAssistant):
     llm_mode = storage_declarations.settings_details['llm_mode']
     api_key = storage_declarations.settings_details['api_key']
 
-    print('Pdf : ', llm_mode)
     if llm_mode == 'qwen':
         result = to_llm(augmented_prompt)
     elif llm_mode == 'groq':

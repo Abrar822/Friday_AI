@@ -139,7 +139,6 @@ class DesktopModule:
             webbrowser.open(parsed)
             return "Navigation successful."
         except Exception as err:
-            print(str(err))
             return "Failed to navigate."
 
     def open_selected_path(self, task):
@@ -151,7 +150,6 @@ class DesktopModule:
                 return "Selected path does not exist."
             os.startfile(path)
         except Exception as err:
-            print(str(err))
             return "Failed to navigate to provided path."
 
     def analyse_selected_content(self, task):
@@ -197,7 +195,6 @@ class DesktopModule:
                 return "Content rewritten successfully."
             return data
         except Exception as err:
-            print(str(err))
             return f"Failed to {query_type} the content."
 
     def execute(self, task):

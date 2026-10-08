@@ -87,7 +87,6 @@ export default function Memory({ setAlert, pickedFolder, setPickFolder, setTable
   const insertPaths = async () => {
     try {
       if (pickedFolder.length == 0) {
-        console.log(pickedFolder);
         setAlert({
           msg: "No Paths Selected. Select a path to insert it.",
           state: true,
