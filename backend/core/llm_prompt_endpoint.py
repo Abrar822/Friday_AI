@@ -3,7 +3,7 @@ from ..core.llm import route_task, route_task_by_groq
 from ..pydantic_models.task_router_models import TaskRouterResponse
 from ..pydantic_models.llm_models.llm_models import LLMRequestModel
 from ..friday_modules.persistent_memory import storage_declarations
-from groq import AuthenticationError
+from groq import AuthenticationError, RateLimitError
 
 llm_prompt_router = APIRouter()
 
@@ -38,12 +38,22 @@ def generate_response(request: LLMRequestModel, req: Request):
 
         return {"response": result}
 
+    except RateLimitError as err:
+        retry_after = err.request.headers.get("retry-after")
+        req.app.state.speaker.tts(
+            f"Rate Limit Exceeded. Retry After {retry_after} seconds."
+        )
+        return {
+            "response": [f"Rate Limit Exceeded. Retry After {retry_after} seconds."]
+        }
+
     except AuthenticationError:
         req.app.state.speaker.tts("Invalid Groq Api Key.")
         return {"response": ["Invalid Groq Api Key."]}
-    
+
     except Exception as err:
         import traceback
+
         traceback.print_exc()
 
         req.app.state.speaker.tts("Sorry, I couldn't process that request.")
