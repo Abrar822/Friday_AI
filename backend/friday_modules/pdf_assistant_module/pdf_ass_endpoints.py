@@ -12,6 +12,7 @@ model = None
 collection = None
 chroma_db_client = None
 
+
 def load_model():
     global model, collection, chroma_db_client
     path = Path.home() / "Friday_AI" / "chromadb.db"
@@ -106,12 +107,12 @@ def query(pdf_assist: PdfAssistant):
     {query}
     Answer the user's question using only the PDF CONTEXT.
     """
-    llm_mode = storage_declarations.settings_details['llm_mode']
-    api_key = storage_declarations.settings_details['api_key']
+    llm_mode = storage_declarations.settings_details["llm_mode"]
+    api_key = storage_declarations.settings_details["api_key"]
 
-    if llm_mode == 'qwen':
+    if llm_mode == "qwen":
         result = to_llm(augmented_prompt)
-    elif llm_mode == 'groq':
+    elif llm_mode == "groq":
         result = to_llm_by_groq(augmented_prompt, api_key)
 
     return result
@@ -120,17 +121,30 @@ def query(pdf_assist: PdfAssistant):
 @pdf_upload_endpoints.get("/pdf/get", status_code=status.HTTP_200_OK)
 def get_data():
     global model, collection, chroma_db_client
+
     def removeDuplicates(data):
         filenames = set()
         new_data = []
         for tupl in data:
-            if tupl['filename'] not in filenames:
-                new_data.append({'filename': tupl['filename'], 'doc_id': tupl['doc_id']})
-                filenames.add(tupl['filename'])
+            if tupl["filename"] not in filenames:
+                new_data.append(
+                    {"filename": tupl["filename"], "doc_id": tupl["doc_id"]}
+                )
+                filenames.add(tupl["filename"])
         return new_data
+
     if not model and not collection and not chroma_db_client:
         load_model()
     data = collection.get(include=["metadatas"])
-    data = [{"filename": d['filename'], "doc_id": d['doc_id']} for d in data['metadatas']]
+    data = [
+        {"filename": d["filename"], "doc_id": d["doc_id"]} for d in data["metadatas"]
+    ]
     data = removeDuplicates(data)
+    if not data:
+        model = None
+        collection = None
+        chroma_db_client = None
+        import gc
+
+        gc.collect()
     return data

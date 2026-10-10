@@ -15,8 +15,10 @@ def generate_response(request: LLMRequestModel, req: Request):
     result = None
     try:
         llm_mode = storage_declarations.settings_details["llm_mode"]
-        api_key = storage_declarations.settings_details["api_key"]
+        api_key = storage_declarations.settings_details["api_key"].strip()
         if llm_mode == "groq":
+            if not api_key.strip():
+                raise ValueError("Please Provide a Groq Api key.")
             data = route_task_by_groq(request.prompt, api_key)
         elif llm_mode == "qwen":
             data = route_task(request.prompt)
@@ -42,14 +44,26 @@ def generate_response(request: LLMRequestModel, req: Request):
         retry_after = err.request.headers.get("retry-after")
         req.app.state.speaker.tts(
             f"Rate Limit Exceeded. Retry After {retry_after} seconds."
+            if retry_after
+            else "Groq rate limit exceeded. Please try again later."
         )
         return {
-            "response": [f"Rate Limit Exceeded. Retry After {retry_after} seconds."]
+            "response": [
+                (
+                    f"Rate Limit Exceeded. Retry After {retry_after} seconds."
+                    if retry_after
+                    else "Groq rate limit exceeded. Please try again later."
+                )
+            ]
         }
 
     except AuthenticationError:
         req.app.state.speaker.tts("Invalid Groq Api Key.")
         return {"response": ["Invalid Groq Api Key."]}
+
+    except ValueError as err:
+        req.app.state.speaker.tts(str(err))
+        return {"response": [str(err)]}
 
     except Exception as err:
         import traceback
