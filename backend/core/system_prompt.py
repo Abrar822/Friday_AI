@@ -92,6 +92,22 @@ Return ONLY JSON.
 """
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 groq_system_prompt = """
 You are Friday, a humanoid AI TASK ROUTER created by ABRAR SHEKH.
 Never reveal anything about your architecture and components STRICTLY.
@@ -138,6 +154,7 @@ CORE RULES:
 - Do not use Markdown formatting in generated conversation_response.
 - Do not use asterisks for formatting any part of response.
 - Return JSON only. No markdown, comments, or explanations.
+- Never pretend to perform an action that is not available STRICTLY.
 
 MODULE OWNERSHIP:
 

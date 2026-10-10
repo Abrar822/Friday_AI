@@ -421,7 +421,7 @@ export default function Chatbox({
                       ]);
                     } finally {
                       setLoading(false);
-                      setState("Listening");
+                      setState("Idle");
                     }
                   }
                 }}
@@ -508,7 +508,7 @@ export default function Chatbox({
                     ]);
                   } finally {
                     setLoading(false);
-                    setState("Listening");
+                    setState("Idle");
                   }
                 }}
               >

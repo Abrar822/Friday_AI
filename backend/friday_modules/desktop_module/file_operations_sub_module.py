@@ -11,7 +11,10 @@ from ..persistent_memory.memory_operations import (
     fetch_locations,
     rename_direct,
     delete_direct,
-    upsert_direct
+    upsert_direct,
+    handle_renamed_folder_paths,
+    handle_moved_folder_paths,
+    remove_stale_paths
 )
 from ..persistent_memory.db import get_conn_obj
 
@@ -49,7 +52,9 @@ class FileOperationsSubModule:
         foldername = task.parameters.parent_foldername
         filename = task.parameters.filename
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -109,10 +114,12 @@ class FileOperationsSubModule:
             with get_conn_obj() as conn:
                 storage_declarations.locations = fetch_locations(conn)
 
-            if res["state"] and res["exist"]:
-                msg += " Folder Path updated successfully in Friday memory."
-            elif not res["state"]:
-                msg += " Folder Path cannot be updated, as some error occurred."
+            if not res["state"]:
+                msg += " Folder Path cannot be updated in Friday memory, as some error occurred."
+
+            # Update paths of folder inside moving folder
+            handle_moved_folder_paths(str(actual_folder_path), str(new_folder_path))
+
             return msg
         except Exception as err:
             return f"Failed to move folder. Error: {err}"
@@ -163,7 +170,9 @@ class FileOperationsSubModule:
         filename = task.parameters.filename
         content = task.parameters.content
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -211,7 +220,9 @@ class FileOperationsSubModule:
     def open_file(self, task):
         filename = task.parameters.filename
         foldername = task.parameters.foldername
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -249,33 +260,36 @@ class FileOperationsSubModule:
 
         try:
             os.startfile(folder_path)
-            return 'Folder opened successfully.'
+            return "Folder opened successfully."
         except Exception as err:
             return f"Failed to open folder '{foldername}'. Error: '{str(err)}'."
 
     def open_folder_direct(self, task):
         foldername = task.parameters.foldername
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
-        folder_path = Path(location_list[0]['location'])
+        folder_path = Path(location_list[0]["location"])
         if not folder_path.is_dir():
             return f"Folder '{foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
 
         try:
             os.startfile(folder_path)
-            return 'Folder opened successfully.'
+            return "Folder opened successfully."
         except Exception as err:
             return f"Failed to open folder '{foldername}'. Error: '{str(err)}'."
-
 
     def delete_file(self, task):
         foldername = task.parameters.foldername
         filename = task.parameters.filename
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -304,32 +318,37 @@ class FileOperationsSubModule:
         if not folder_path.is_dir():
             return f"Folder '{parent_foldername}' is registered, but the physical path '{folder_path}' does not exist on this machine."
 
-        folder_path = folder_path / folder_to_be_deleted
-        if not folder_path.is_dir():
-            return f"Folder '{folder_to_be_deleted}' was not found inside '{parent_foldername}'."
+        for p in folder_path.rglob("*"):
+            depth = len(p.relative_to(folder_path).parts)
+            if depth > 2:
+                continue
+            if p.name.lower() == folder_to_be_deleted.lower() and p.is_dir():
+                msg = f"Folder {folder_to_be_deleted} sent to trash successfully."
+                send2trash(p)
+                os.startfile(p.parent)
+                res = delete(folder_to_be_deleted)
+                # updation in db data in RAM
+                with get_conn_obj() as conn:
+                    storage_declarations.locations = fetch_locations(conn)
 
-        msg = f"Folder {folder_to_be_deleted} sent to trash successfully."
-        send2trash(folder_path)
-        os.startfile(Path(location_list[0]["location"]))
+                if not res["state"]:
+                    msg += " Folder cannot be deleted in Friday memory, as some error occurred."
 
-        res = delete(folder_to_be_deleted)
+                # deleting stale paths
+                remove_stale_paths()
 
-        # updation in db data in RAM
-        with get_conn_obj() as conn:
-            storage_declarations.locations = fetch_locations(conn)
+                return msg
 
-        if res["state"]:
-            msg += " Folder Path deleted successfully from Friday memory."
-        else:
-            msg += " Folder Path cannot be updated, as some error occurred."
-        return msg
+        return f"Folder '{folder_to_be_deleted}' was not found inside '{parent_foldername}'."
 
     def rename_file(self, task):
         foldername = task.parameters.foldername
         filename = task.parameters.filename
         new_filename = task.parameters.new_filename
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -382,14 +401,15 @@ class FileOperationsSubModule:
             str(new_folder_path),
         )
 
+        # updating locations that are registered and located inside renaming folder
+        handle_renamed_folder_paths(str(folder_path), old_foldername, new_foldername)
+
         # updation in ram data of db
         with get_conn_obj() as conn:
             storage_declarations.locations = fetch_locations(conn)
 
-        if res["state"] and res["exist"]:
-            msg += " Foldername updated successfully in Friday memory."
-        elif not res["state"]:
-            msg += " Foldername cannot be updated, as some error occurred."
+        if not res["state"]:
+            msg += " Foldername cannot be updated in Friday memory, as some error occurred."
 
         return msg
 
@@ -397,7 +417,9 @@ class FileOperationsSubModule:
         old_foldername = task.parameters.old_foldername
         new_foldername = task.parameters.new_foldername
 
-        location_list = self.filter_location_list(storage_declarations.locations, old_foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, old_foldername
+        )
         if not location_list:
             return f"Folder '{old_foldername}' is not registered in Friday memory."
 
@@ -413,10 +435,11 @@ class FileOperationsSubModule:
         msg = f"Folder '{old_foldername}' renamed to '{new_foldername}' successfully."
 
         res = rename_direct(old_foldername, new_foldername, str(new_folder_path))
-        if res["state"] and res["exist"]:
-            msg += " Foldername updated successfully in Friday memory."
-        elif not res["state"]:
-            msg += " Foldername cannot be updated, as some error occurred."
+        if not res["state"]:
+            msg += " Foldername cannot be updated in Friday memory, as some error occurred."
+
+        # updating locations that are registered and located inside renaming folder
+        handle_renamed_folder_paths(str(folder_path), old_foldername, new_foldername)
 
         with get_conn_obj() as conn:
             storage_declarations.locations = fetch_locations(conn)
@@ -426,7 +449,9 @@ class FileOperationsSubModule:
     def delete_folder_direct(self, task):
         foldername = task.parameters.folder_to_be_deleted_name
 
-        location_list = self.filter_location_list(storage_declarations.locations, foldername)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, foldername
+        )
         if not location_list:
             return f"Folder '{foldername}' is not registered in Friday memory."
 
@@ -438,32 +463,33 @@ class FileOperationsSubModule:
         send2trash(folder_path)
 
         res = delete_direct(foldername)
-        if res["state"]:
-            msg += " Folder Path deleted successfully from Friday memory."
-        else:
-            msg += " Folder Path cannot be updated, as some error occurred."
+        if not res['state']:
+            msg += " Folder cannot be deleted in Friday memory, as some error occurred."
         with get_conn_obj() as conn:
             storage_declarations.locations = fetch_locations(conn)
 
+        # deleting stale paths
+        remove_stale_paths()
+            
         return msg
 
     def move_folder_direct(self, task):
         folder_to_be_moved = task.parameters.folder_to_be_moved
         destination_folder = task.parameters.destination_folder
 
-        location_list = self.filter_location_list(storage_declarations.locations, folder_to_be_moved)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, folder_to_be_moved
+        )
         if not location_list:
-            return (
-                f"Folder '{folder_to_be_moved}' is not registered in Friday memory."
-            )
-        folder_path = Path(location_list[0]['location'])
+            return f"Folder '{folder_to_be_moved}' is not registered in Friday memory."
+        folder_path = Path(location_list[0]["location"])
 
-        location_list = self.filter_location_list(storage_declarations.locations, destination_folder)
+        location_list = self.filter_location_list(
+            storage_declarations.locations, destination_folder
+        )
         if not location_list:
-            return (
-                f"Folder '{destination_folder}' is not registered in Friday memory."
-            )
-        destination_folder_path = Path(location_list[0]['location'])
+            return f"Folder '{destination_folder}' is not registered in Friday memory."
+        destination_folder_path = Path(location_list[0]["location"])
 
         if not folder_path.is_dir():
             return f"Folder '{folder_to_be_moved}' is registered, but the physical path '{folder_path}' does not exist on this machine."
@@ -478,15 +504,16 @@ class FileOperationsSubModule:
 
             new_path = destination_folder_path / folder_to_be_moved
             res = upsert_direct(folder_to_be_moved, str(new_path))
-            
-            if res["state"] and res["exist"]:
-                msg += " Folder Path updated successfully in Friday memory."
-            elif not res["state"]:
-                msg += " Folder Path cannot be updated, as some error occurred."
+
+            if not res["state"]:
+                msg += " Folder Path cannot be updated in Friday memory, as some error occurred."
 
             with get_conn_obj() as conn:
                 storage_declarations.locations = fetch_locations(conn)
 
+            # Update paths of folder inside moving folder
+            handle_moved_folder_paths(str(folder_path), str(new_path))
+
             return msg
         except Exception as err:
-            return f'Some Error occurred. Error: {err}'
+            return f"Some Error occurred. Error: {err}"

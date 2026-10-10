@@ -32,7 +32,6 @@ from .friday_modules.persistent_memory.general_db_operations import (
 )
 from .core.api_key_handling import get_api_key
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db()
@@ -51,9 +50,9 @@ async def lifespan(app: FastAPI):
 
     app.state.ai = TaskRouter()
     app.state.speaker = tts.TextToSpeechModule()
-    app.state.speaker.tts(
-        f"Hi {storage_declarations.settings_details['name']}, Friday here. How can I help you"
-    )
+    # app.state.speaker.tts(
+    #     f"Hi {storage_declarations.settings_details['name']}, Friday here. How can I help you"
+    # )
     yield
 
 

@@ -19,7 +19,7 @@ function App() {
   const [prompt, setPrompt] = useState("");
 
   const menuBtnRef = useRef(null);
-  const [state, setState] = useState("Listening"); // Listening, Working on it
+  const [state, setState] = useState("Idle"); // Listening, Working on it, Idle
   const [alert, setAlert] = useState({ msg: "", state: false });
   const [pickedFolder, setPickFolder] = useState([]);
   const [setting, setSetting] = useState({
@@ -105,6 +105,13 @@ function App() {
       stream.current.getTracks().forEach((track) => track.stop());
     setRecording(false);
   }; // STT STUFF
+
+  // to Display idle
+  useEffect(() => {
+    if(recording) {
+      setState('Listening')
+    }
+  }, [recording])
 
   // Alert Box hide
   useEffect(() => {
