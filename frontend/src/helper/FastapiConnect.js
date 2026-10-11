@@ -1,5 +1,8 @@
+import { API_BASE_URL } from "../config/api";
+
+
 export async function fastapiConnect(prompt) {
-  let response = await fetch("http://127.0.0.1:8000/prompt", {
+  let response = await fetch(`${API_BASE_URL}/prompt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -9,9 +9,10 @@
   border-bottom-left-radius: 10px;
   border-top-left-radius: 10px;
   overflow: hidden;
-  background: var(--sidebar-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* background: var(--sidebar-bg) !important; */
+  background: rgba(32, 35, 41, 0.601);
+  /* backdrop-filter: blur(8px) !important; */
+  /* -webkit-backdrop-filter: blur(8px) !important; */
   border: 1px solid var(--dark-border);
 }
 

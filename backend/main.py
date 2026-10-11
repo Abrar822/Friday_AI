@@ -32,6 +32,7 @@ from .friday_modules.persistent_memory.general_db_operations import (
 )
 from .core.api_key_handling import get_api_key
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db()
@@ -60,11 +61,23 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "tauri://localhost",
+        "https://tauri.localhost",
+        "http://tauri.localhost",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/health")
+def health():
+    return {"status": "200"}
+
 
 # Call endpoints
 app.include_router(llm_prompt_router)

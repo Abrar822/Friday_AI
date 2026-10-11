@@ -1,5 +1,7 @@
+import { API_BASE_URL } from "../config/api";
+
 export async function pdfUpload(formData) {
-  let response = await fetch("http://127.0.0.1:8000/pdf/upload", {
+  let response = await fetch(`${API_BASE_URL}/pdf/upload`, {
     method: "POST",
     body: formData,
   });
@@ -8,7 +10,7 @@ export async function pdfUpload(formData) {
 }
 
 export function deletePdf() {
-  return fetch("http://127.0.0.1:8000/pdf/delete", {
+  return fetch(`${API_BASE_URL}/pdf/delete`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +25,7 @@ export function deletePdf() {
 }
 
 export function queryRequest(query) {
-  return fetch('http://127.0.0.1:8000/pdf/query', {
+  return fetch(`${API_BASE_URL}/pdf/query`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -42,7 +44,7 @@ export function queryRequest(query) {
 }
 
 export function getData() {
-  return fetch('http://127.0.0.1:8000/pdf/get')
+  return fetch(`${API_BASE_URL}/pdf/get`)
   .then(async res => {
     let data = await res.json()
     if(!res.ok) {

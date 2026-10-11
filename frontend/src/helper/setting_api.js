@@ -1,5 +1,7 @@
+import { API_BASE_URL } from "../config/api";
+
 export function settingConnect(data) {
-  return fetch("http://127.0.0.1:8000/settings", {
+  return fetch(`${API_BASE_URL}/settings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +21,7 @@ export function settingConnect(data) {
 }
 
 export function fetchSetting() {
-  return fetch("http://127.0.0.1:8000/settings_get").then(async (res) => {
+  return fetch(`${API_BASE_URL}/settings_get`).then(async (res) => {
     let data = await res.json();
     if (!res.ok) {
       throw new Error(data.detail);

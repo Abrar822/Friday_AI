@@ -22,6 +22,8 @@ def fetchKey():
 
 def transcribe(file):
     api_key = fetchKey()
+    if not api_key.strip():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Please provide a Groq Api Key')
     client = Groq(api_key=api_key)
     transcription = client.audio.transcriptions.create(
         file=(file.filename, file.file, file.content_type),

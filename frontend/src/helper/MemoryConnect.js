@@ -1,5 +1,7 @@
+import { API_BASE_URL } from "../config/api";
+
 export function FetchLocations() {
-  return fetch("http://127.0.0.1:8000/display").then(async (res) => {
+  return fetch(`${API_BASE_URL}/display`).then(async (res) => {
     let data = await res.json();
     if (!res.ok) {
       throw new Error(`Some Error occurred. ${data.detail}`);
@@ -9,7 +11,7 @@ export function FetchLocations() {
 }
 
 export function SearchLocations(f_name) {
-  return fetch("http://127.0.0.1:8000/search", {
+  return fetch(`${API_BASE_URL}/search`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -27,7 +29,7 @@ export function SearchLocations(f_name) {
 }
 
 export function deleteLocations(foldernamesDict) {
-  return fetch("http://127.0.0.1:8000/delete", {
+  return fetch(`${API_BASE_URL}/delete`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -43,7 +45,7 @@ export function deleteLocations(foldernamesDict) {
 }
 
 export function upsertLocations(folderLocations) {
-  return fetch("http://127.0.0.1:8000/insert", {
+  return fetch(`${API_BASE_URL}/insert`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
