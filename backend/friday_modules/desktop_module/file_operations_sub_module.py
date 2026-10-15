@@ -362,7 +362,7 @@ class FileOperationsSubModule:
 
         for p in folder_path.rglob("*"):
             depth = len(p.relative_to(folder_path).parts)
-            if depth > 2:
+            if depth > 1:
                 continue
             if p.name.lower() == folder_to_be_deleted.lower() and p.is_dir():
                 msg = f"Folder {folder_to_be_deleted} sent to trash."
