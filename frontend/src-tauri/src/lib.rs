@@ -8,7 +8,11 @@ use std::thread;
 use std::time::{Duration, Instant};
 use std::os::windows::process::CommandExt;
 
-use tauri::{Manager, RunEvent, path::BaseDirectory};
+use tauri::{Emitter, Manager, RunEvent, path::BaseDirectory};
+
+use tauri_plugin_global_shortcut::{
+    Code, GlobalShortcutExt, Shortcut, ShortcutState,
+};
 
 struct BackendState {
     child: Mutex<Option<Child>>,
@@ -38,7 +42,8 @@ fn wait_for_backend(
         if let Some(status) = child.try_wait()? {
             return Err(format!(
                 "Friday backend exited before becoming ready: {status}"
-            ).into());
+            )
+            .into());
         }
 
         if let Ok(mut stream) =
@@ -75,10 +80,26 @@ fn wait_for_backend(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, shortcut, event| {
+                    let f2 = Shortcut::new(None, Code::F2);
+
+                    if shortcut == &f2
+                        && event.state() == ShortcutState::Pressed
+                    {
+                        let _ = app.emit("f2-pressed", ());
+                    }
+                })
+                .build(),
+        )
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![get_backend_url])
         .setup(|app| {
+            // Register the global F2 shortcut once in Rust.
+            let f2 = Shortcut::new(None, Code::F2);
+            app.global_shortcut().register(f2)?;
+
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -113,7 +134,8 @@ pub fn run() {
                 return Err(format!(
                     "Packaged backend executable not found: {}",
                     backend_exe.display()
-                ).into());
+                )
+                .into());
             }
 
             let resource_dir = app.path().resource_dir()?;
@@ -130,6 +152,7 @@ pub fn run() {
             let error_file = log_file.try_clone()?;
 
             let mut command = Command::new(&backend_exe);
+
             command
                 .arg("--port")
                 .arg(port.to_string())

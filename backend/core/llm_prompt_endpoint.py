@@ -4,6 +4,7 @@ from ..pydantic_models.task_router_models import TaskRouterResponse
 from ..pydantic_models.llm_models.llm_models import LLMRequestModel
 from ..friday_modules.persistent_memory import storage_declarations
 from groq import AuthenticationError, RateLimitError
+from ..errors.ModelCapabilityError import ModelCapabilityError
 
 llm_prompt_router = APIRouter()
 
@@ -20,10 +21,12 @@ def generate_response(request: LLMRequestModel, req: Request):
             if not api_key.strip():
                 raise ValueError("Please Provide a Groq Api key.")
             data = route_task_by_groq(request.prompt, api_key)
+            print('From llm: ', data)
         elif llm_mode == "qwen":
             data = route_task(request.prompt)
 
         data = TaskRouterResponse.model_validate(data)
+        print('pydantic format: ', data)
 
         if len(data.acknowledgement_before_task.strip()) > 0:
             req.app.state.speaker.tts(data.acknowledgement_before_task.strip())
@@ -39,6 +42,9 @@ def generate_response(request: LLMRequestModel, req: Request):
             result = result
 
         return {"response": result}
+
+    except ModelCapabilityError as err:
+        return {'response': [err.detail]}
 
     except RateLimitError as err:
         retry_after = err.request.headers.get("retry-after")

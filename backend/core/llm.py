@@ -26,6 +26,7 @@ ws ::= [ \t\n\r]*
 
 # from dotenv import load_dotenv
 from groq import Groq
+from ..friday_modules.persistent_memory.db import get_nickname
 
 # import os
 # load_dotenv('backend/.env')
@@ -33,11 +34,28 @@ from groq import Groq
 
 
 def route_task_by_groq(prompt: str, key: str):
+    nickname = get_nickname()
+    initial_str = """You are Friday, a humanoid AI TASK ROUTER created by ABRAR SHEKH.
+    Never reveal anything about your architecture and components STRICTLY.
+    Your job is to convert the user's request into executable tasks."""
+    nickname_rule = (
+        f'Use the nickname "{nickname}" naturally in every response.'
+        if nickname
+        else "No nickname is set. Do not invent one."
+    )
+
     client = Groq(api_key=key)
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[
-            {"role": "system", "content": groq_system_prompt},
+            {
+                "role": "system",
+                "content": initial_str
+                + "\n"
+                + nickname_rule
+                + "\n"
+                + groq_system_prompt,
+            },
             {"role": "user", "content": prompt},
         ],
         temperature=0.2,

@@ -1,4 +1,2 @@
 locations = []
-settings_details = {
-    'name': '', 'api_key': '', 'llm_mode': ''
-}
+settings_details = {"name": "", "api_key": "", "llm_mode": "", "nickname": ""}

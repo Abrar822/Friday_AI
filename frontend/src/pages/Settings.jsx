@@ -18,6 +18,18 @@ export default function Settings({ setting, setSetting, setAlert }) {
             value={setting.name}
           />
         </div>
+        <div className="name w-full flex gap-8 justify-start items-center">
+          <div className="w-[100px]">Nickname</div>
+          <input
+            type="text"
+            className="text-(--text-primary) bg-(--message) border-[1px] border-solid border-(--dark-border) py-[4px] px-[10px] rounded-lg h-[35px] flex-1 transition-all duration-250 ease-in"
+            placeholder="Enter a nickname that you want Friday to call you"
+            onChange={(e) => {
+              setSetting((prev) => ({ ...prev, nickname: e.target.value }));
+            }}
+            value={setting.nickname}
+          />
+        </div>
         <div className="name w-full flex gap-8 justify-start items-center relative overflow-hidden">
           <div
             className="eye absolute right-0 h-full w-[40px] rounded-lg text-(--text-primary) flex items-center justify-center cursor-pointer font-bold"
@@ -103,6 +115,7 @@ export default function Settings({ setting, setSetting, setAlert }) {
                   name: data.name,
                   api_key: data.api_key,
                   llm_mode: data.llm_mode,
+                  nickname: data.nickname
                 });
               }
             } catch (err) {

@@ -11,6 +11,7 @@ import Chatbox from "./components/Chatbox";
 import Alert from "./components/Alert";
 import { fetchSetting } from "./helper/setting_api";
 import { sttConnect } from "./helper/sttConnect";
+import { listen } from "@tauri-apps/api/event";
 
 function App() {
   const recordBtnRef = useRef(null); // To start mic with f2
@@ -26,23 +27,42 @@ function App() {
     name: "",
     api_key: "",
     llm_mode: "groq",
+    nickname: "",
   });
   const [tableUpdate, setTableUpdate] = useState(false);
 
-  // STT STUFF
+  
   useEffect(() => {
-    const handle = async () => {
-      await register("F2", (e) => {
-        if (e.state === "Pressed") {
-          recordBtnRef.current.click();
-        }
-      });
-    };
-    handle();
-    return () => {
-      unregister("f2");
-    };
-  }, []); // For global f2 working
+  let unlisten;
+
+  const setup = async () => {
+    unlisten = await listen("f2-pressed", () => {
+      recordBtnRef.current?.click();
+    });
+  };
+
+  setup();
+
+  return () => {
+    unlisten?.();
+  };
+}, []);
+
+  // STT STUFF
+  // useEffect(() => {
+  //   const handle = async () => {
+  //     await register("F2", (e) => {
+  //       if (e.state === "Pressed") {
+  //         recordBtnRef.current.click();
+  //       }
+  //     });
+  //   };
+  //   handle();
+  //   return () => {
+  //     unregister("f2");
+  //   };
+  // }, []); // For global f2 working
+  
   // useEffect(() => {
   //   const handle = (e) => {
   //     if (e.code === "F2") recordBtnRef.current.click();
@@ -108,10 +128,10 @@ function App() {
 
   // to Display idle
   useEffect(() => {
-    if(recording) {
-      setState('Listening')
+    if (recording) {
+      setState("Listening");
     }
-  }, [recording])
+  }, [recording]);
 
   // Alert Box hide
   useEffect(() => {
@@ -135,6 +155,7 @@ function App() {
           name: data.name || "",
           api_key: data.api_key || "",
           llm_mode: data.llm_mode || "",
+          nickname: data.nickname || "",
         });
       } catch (err) {
         setAlert({ msg: "Error Fetching the Settings details.", state: true });

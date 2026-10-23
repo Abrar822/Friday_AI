@@ -12,6 +12,8 @@ setting_endpoints = APIRouter()
 
 @setting_endpoints.post("/settings", status_code=status.HTTP_201_CREATED)
 def set_data(data: SettingData, conn=Depends(get_connection)):
+    print(data)
+    print('start')
     cur = None
     tuples = [(key, val) for key, val in data.model_dump().items() if key != "api_key"]
     try:
@@ -31,8 +33,12 @@ def set_data(data: SettingData, conn=Depends(get_connection)):
             ]
             set_api_key(data.api_key)
             storage_declarations.settings_details["api_key"] = get_api_key()
+            storage_declarations.settings_details["nickname"] = settings_details[
+                "nickname"
+            ]
             return {"message": "Changes saved successfully."}
     except Exception as err:
+        print(str(err))
         if conn:
             conn.rollback()
         raise HTTPException(

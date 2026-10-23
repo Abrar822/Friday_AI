@@ -322,14 +322,27 @@ class AnalyseSelectedContent(BaseModel):
     action: Literal["analyse_selected_content"]
     parameters: AnalyseSelectedContentParams
 
+
 class OpenFolderDirectParams(BaseModel):
     foldername: str
 
+
 class OpenFolderDirect(BaseModel):
     id: int
-    module: Literal['desktop']
-    action: Literal['open_folder_direct']
+    module: Literal["desktop"]
+    action: Literal["open_folder_direct"]
     parameters: OpenFolderDirectParams
+
+
+class AnalyseScreenParams(BaseModel):
+    query: str
+
+
+class AnalyseScreen(BaseModel):
+    id: int
+    module: Literal["desktop"]
+    action: Literal["analyse_screen"]
+    parameters: AnalyseScreenParams
 
 
 DeskTopTask = Annotated[
@@ -363,6 +376,7 @@ DeskTopTask = Annotated[
     | OpenSelectedPath
     | OpenSelectedUrl
     | AnalyseSelectedContent
-    | OpenFolderDirect,
+    | OpenFolderDirect
+    | AnalyseScreen,
     Field(discriminator="action"),
 ]

@@ -8,6 +8,15 @@ import {
 } from "../helper/pdf_assistant_api";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+  BorderStyle,
+} from "docx";
+import { saveAs } from "file-saver";
 
 export default function Chatbox({
   setState,
@@ -37,6 +46,7 @@ export default function Chatbox({
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const [downLoader, setDownLoader] = useState(false)
 
   const uploadFileRef = useRef(null);
   const [pdfs, setPdfs] = useState([]);
@@ -190,6 +200,84 @@ export default function Chatbox({
     };
   }, [mode.state]);
 
+  // download the chat
+  const downloadChat = async () => {
+    if (messages.length == 1) {
+      setAlert({ msg: "The Chat is empty.", state: true });
+      return;
+    }
+    setDownLoader(true);
+    const children = [
+      new Paragraph({
+        text: "Friday - Chat History",
+        heading: HeadingLevel.TITLE,
+        spacing: { after: 300 },
+      }),
+    ];
+
+    messages.slice(1).forEach((msg) => {
+      const isQuestion = msg.type === "user-message";
+      const text = String(msg.message ?? "").trim();
+
+      if (!text) return;
+
+      children.push(
+        new Paragraph({
+          spacing: {
+            before: 180,
+            after: 80,
+            line: 300,
+          },
+          keepNext: true,
+          children: [
+            new TextRun({
+              text: isQuestion ? "Question" : "Answer",
+              bold: true,
+              color: isQuestion ? "2457A7" : "27804A",
+              size: 24,
+            }),
+          ],
+        }),
+        new Paragraph({
+          spacing: {
+            after: 180,
+            line: 300,
+          },
+          indent: { left: 240 },
+          children: [
+            new TextRun({
+              text,
+              size: 22,
+            }),
+          ],
+        }),
+      );
+    });
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {
+            page: {
+              margin: {
+                top: 1000,
+                bottom: 1000,
+                left: 1200,
+                right: 1200,
+              },
+            },
+          },
+          children,
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "Friday-Chat-History.docx");
+    setDownLoader(false);
+    setAlert({ msg: "Docx file saved in Downloads folder.", state: true });
+  };
+
   return (
     <>
       <div
@@ -252,6 +340,21 @@ export default function Chatbox({
                 <i className="ti ti-microphone"></i>
               ) : (
                 <i className="ti ti-microphone-off"></i>
+              )}
+            </div>
+            <div
+              className={`stt-btn text-(--text-primary) bg-transparent p-1 rounded-full border-[1px] border-solid w-[35px] h-[35px] border-[white]/20 flex justify-center items-center cursor-pointer transition-all duration-250 ease-in active:scale-95 ml-3 ${
+                downLoader
+                  ? "opacity-50 cursor-not-allowed pointer-events-none"
+                  : ""
+              }`}
+              title="Download the Chat as pdf."
+              onClick={downloadChat}
+            >
+              {!downLoader ? (
+                <i className="ti ti-download"></i>
+              ) : (
+                <div className="animate-spin h-5 w-5 rounded-full border-2 border-transparent border-t-(--text-primary) border-r-(--text-primary)"></div>
               )}
             </div>
           </div>
@@ -379,7 +482,10 @@ export default function Chatbox({
                         response = await fastapiConnect(prompt);
                         // To update in memory ui table after folder state update
                         response.response.forEach((msg) => {
-                          if (msg.includes("folder") || msg.includes("Folder")) {
+                          if (
+                            msg.includes("folder") ||
+                            msg.includes("Folder")
+                          ) {
                             setTableUpdate(true);
                           }
                         });

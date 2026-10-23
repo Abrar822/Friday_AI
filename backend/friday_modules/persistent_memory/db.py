@@ -33,7 +33,7 @@ def settingDb():
             ON CONFLICT (key)
             DO NOTHING
     """
-    data = [("name", ""), ("llm_mode", ""), ("api_key", "")]
+    data = [("name", ""), ("llm_mode", ""), ("api_key", ""), ("nickname", "")]
     cur.executemany(query, data)
 
     conn.commit()
@@ -50,3 +50,13 @@ def get_connection():
 
 def get_conn_obj():
     return sqlite3.connect(db_path, check_same_thread=False)
+
+
+def get_nickname():
+    conn = get_conn_obj()
+    cursor = conn.cursor()
+    cursor.execute("SELECT value FROM keyval WHERE key = 'nickname'")
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return row[0].strip() if row and row[0] else ""

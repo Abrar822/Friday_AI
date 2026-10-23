@@ -18,3 +18,4 @@ class SettingData(BaseModel):
     name: str
     api_key: str
     llm_mode: Literal["groq", "qwen"]
+    nickname: str

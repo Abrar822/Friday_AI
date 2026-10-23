@@ -1,5 +1,8 @@
 # Run Qwen:=> .\backend\core\llama_cpp\llama-server.exe -m ".\backend\core\model\qwen2.5-1.5b-instruct-q4_k_m.gguf" -c 4096
 
+# $env:VITE_BACKEND_URL="http://127.0.0.1:8000"
+# npm run tauri dev
+
 # data = {
 #     "acknowledgement_before_task": "Email is being generated, pls dont press any key sir",
 #     "tasks": [

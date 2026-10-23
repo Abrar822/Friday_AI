@@ -15,6 +15,8 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/plugin-dialog": "^2.7.3",
     "@tauri-apps/plugin-global-shortcut": "^2.4.0",
+    "docx": "^9.13.0",
+    "file-saver": "^2.0.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",

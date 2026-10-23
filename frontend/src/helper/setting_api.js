@@ -9,7 +9,8 @@ export function settingConnect(data) {
     body: JSON.stringify({
       name: data.name,
       api_key: data.api_key,
-      llm_mode: data.llm_mode
+      llm_mode: data.llm_mode,
+      nickname: data.nickname
     }),
   }).then(async (res) => {
     let response = await res.json();
