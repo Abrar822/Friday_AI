@@ -37,6 +37,7 @@ Examples:
 - "Open YouTube."
 - "Open GitHub."
 - "Open [https://www.wikipedia.org](https://www.wikipedia.org)."
+- "Open the webpage from where I can download python for my machine"
 
 ### Search a Specific Website
 
@@ -47,7 +48,7 @@ Supported websites: YouTube, Google, GitHub, Wikipedia, Reddit, Amazon, LinkedIn
 Examples:
 
 - "Search YouTube for Python tutorials."
-- "Search GitHub for React projects."
+- "Search GitHub for repository Friday_AI"
 - "Search Wikipedia for artificial intelligence."
 
 ### Summarize a Webpage
@@ -59,6 +60,7 @@ Examples:
 - "Summarize this webpage: [https://example.com/article](https://example.com/article)."
 - "Summarize this article: [https://example.com/news](https://example.com/news)."
 - "Give me a summary of [https://example.com/research](https://example.com/research)."
+- "Summarize me the page of amazon website."
 
 ### Compose an Email
 
@@ -110,9 +112,9 @@ Creates a folder using a saved or specified parent folder.
 
 Examples:
 
-- "Create a folder named Projects inside Documents."
-- "Create a folder named DSA inside Desktop."
-- "Create a folder named Notes inside folder D."
+- "Create a folder Projects inside folder Documents."
+- "Create a folder DSA inside folder Desktop."
+- "Create a folder Notes inside folder D."
 
 ### Create a File
 
@@ -120,9 +122,9 @@ Creates a file in the specified or saved folder. Content can be included in the 
 
 Examples:
 
-- "Create a file named notes.txt in Documents."
-- "Create a file named ideas.txt in Desktop with the content: Friday project ideas."
-- "Create a file named empty.txt in Downloads."
+- "Create a file named notes.txt in folder Documents."
+- "Create a file named ideas.txt in folder Desktop with the content: Friday project ideas."
+- "Create a file named empty.txt in folder Downloads."
 
 ### Open a File
 
@@ -140,8 +142,8 @@ Opens a folder, optionally specifying its parent folder.
 
 Examples:
 
-- "Open Projects inside Documents."
-- "Open Downloads."
+- "Open folder Projects inside folder Documents."
+- "Open folder Downloads."
 - "Open the folder named DSA."
 
 ### Search for a File
@@ -200,9 +202,9 @@ Moves a folder to another destination.
 
 Examples:
 
-- "Move Projects from folder Desktop to folder Documents."
+- "Move folder Projects inside folder Desktop to folder Documents."
 - "Move folder DSA to folder Documents."
-- "Move Reports from folder Downloads to folder Desktop."
+- "Move folder Reports inside folder Downloads to folder Desktop."
 
 ### Delete a File
 
@@ -245,6 +247,7 @@ Examples:
 - "Open Notepad."
 - "Open Calculator."
 - "Open Visual Studio Code."
+- "Open Task Manager"
 
 Availability depends on the application's name and how it is registered or recognized on your system.
 
@@ -257,6 +260,7 @@ Examples:
 - "Paste a short paragraph about artificial intelligence."
 - "Write a Python hello-world program and paste it."
 - "Paste a professional introduction for my presentation."
+- "Paste me a function in python that checks if a number is a palindrome or not."
 
 Make sure the intended application and input field are focused before using this function.
 
