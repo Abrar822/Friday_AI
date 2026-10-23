@@ -1,0 +1,18 @@
+to get fridaybackend.exe
+.\backend\.venv\Scripts\python.exe -m PyInstaller `
+  --clean `
+  --onedir `
+  --name FridayBackend `
+  --paths . `
+  --collect-submodules backend `
+  --collect-all chromadb `
+  --collect-all chromadb_rust_bindings `
+  --collect-all posthog `
+  --collect-all rfc3987_syntax `
+  --hidden-import backend.main `
+  --hidden-import chromadb.api.rust `
+  --hidden-import chromadb.telemetry.product.posthog `
+  backend\launcher.py
+
+build installer
+npm run tauri build
